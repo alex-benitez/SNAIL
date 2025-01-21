@@ -7,6 +7,8 @@ import lewenstein
 import warnings
 
 lewenstein = lewenstein.lewenstein
+class lconfig:
+    pass
 
 def sau_convert(value,quantity,target,pulsefig):
     '''
@@ -64,7 +66,9 @@ def generate_pulse(pulsefig):
     
     Npoints = pulsefig.ppcycle*pulsefig.cycles
     times = pulsefig.wavelength*pulsefig.cycles/(3*(10**8))
-    t = np.linspace(-times/2,times/2,Npoints)
+    # t = np.linspace(-times/2,times/2,Npoints)
+    # t = sau_convert(t, 't', 'sau', pulsefig)
+    t = 4*np.pi*np.arange(-40,40,0.005)
     pult = sau_convert(pulsefig.pulse_duration*1e-15, 't', 'sau', pulsefig)
 
     pulse_list = ['constant','gaussian','super_gaussian','cos_sqr','sin_sqr']
@@ -104,9 +108,9 @@ def generate_pulse(pulsefig):
         carrier = lambda x: np.exp(1j * x)
     else:
         raise ValueError("Invalid carrier: must be 'cos' or 'exp'")
-    
+    print(envelope)
     amplitude = np.array([envelope*carrier(t)])
-    
+
     # Setup frequency axis
     domega = 2 * np.pi / (t[1] - t[0]) / len(t)
     temp = np.arange(len(t))
@@ -118,7 +122,28 @@ def generate_pulse(pulsefig):
     
     return [t,omega,coefficients]
 
+
+
+def get_omega_axis(t, lconfig):
+
+    dt = t[1] - t[0]
+    domega = 2*np.pi/dt/len(t)
+    temp = np.arange(0,len(t))
+    temp[int(len(temp)/2)-1:] = temp[int(len(temp)/2)-1:] - len(temp)
+    omega = temp*domega
     
+    return omega
+
+
+
+def plane_wave_driving_field(x,y,z,lconfig):
+    omega = lconfig.omega
+    pulse_coefficients = lconfig.pulse_coefficients
+    E0_SI = np.sqrt(2*lconfig.peak_intensity*10000/299792458/8.854187817e-12)
+    E0 = sau_convert(E0_SI, 'E', 'SAU', lconfig)
+    return E0 * np.fft.ifft(np.conjugate(pulse_coefficients),  axis=1)
+
+
 
 def dipole_response(t,points,lconfig):
     dt = abs(t[1] - t[0])
@@ -131,7 +156,9 @@ def dipole_response(t,points,lconfig):
     '''
     if not hasattr(lconfig, 'tau_window_length'):
         lconfig.tau_window_length = 0.5
-        
+    if not hasattr(lconfig, 'tau_dropoff_pts'):
+        lconfig.tau_dropoff_pts = 0.1
+    
         
     tau_window_pts    = int(lconfig.ppcycle*lconfig.tau_window_length) # The number of cycles to integrate over (can be less than one)
     tau_dropoff_pts  = int(lconfig.tau_dropoff_pts*tau_window_pts) # The range of the soft window
@@ -155,7 +182,33 @@ def dipole_response(t,points,lconfig):
     Ip = sau_convert(lconfig.ionization_potential*1.602176565e-19, 'u', 'sau', lconfig)
     lconfig.Ip = Ip
     lconfig.alpha = 2*Ip
-    points =
+    
+    t_window = np.cos(0.5 * np.arange(len(t))) ** 2
+
+    omega = get_omega_axis(t,lconfig)
+    final = np.array([])
+ 
+    for point in points:
+        xi,yi,zi = point
+        Et_cmc = np.real(plane_wave_driving_field(xi,yi,zi,lconfig))
+        d_t = lewenstein(t,Et_cmc,lconfig)*t_window
+        # d_t(:,win_start:win_end) = d_t(:,win_start:win_end) .* repmat(t_window,components,1);
+        
+        
+        d_omega = np.conj(np.fft.fft(d_t))
+        
+        omega = omega[:d_omega.size]
+        d_omega = d_omega*np.exp(-1j*omega*t[0])*dt
+        
+        
+        
+        final = np.append(final,d_omega)
+                # final = d_omega
+    response_cmc = final   
+                
+                
+    return [omega,response_cmc]
+        
     
     
     
