@@ -66,6 +66,12 @@ axs[0].set_xlabel('High Harmonic Order')
 axs[0].set_ylabel('Intensity (arbitary log scale)')
 axs[0].set_title('Plot of Harmonic Response in Xenon and Pulse')
 
+axs[1].plot(pulse_omega,pulse_coefficients[0])
+
+axs[1].set_xlabel('High Harmonic Order')
+axs[1].set_ylabel('Intensity (arbitary log scale)')
+axs[1].set_title('Plot of Pulse')
+
 plt.tight_layout()
 plt.show()
 plt.clf()
