@@ -1,4 +1,8 @@
-
+'''
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                        INITIALIZATION
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'''
 import numpy as np
 import matplotlib.pyplot as plt
 import HHGBenitezFinal
@@ -7,7 +11,15 @@ from numpy.linalg import norm
 import time 
 
 # start = time.time()
-config = HHGBenitezFinal.lconfig()
+config = HHGBenitezFinal.config()
+sau =  HHGBenitezFinal.sau_convert
+
+'''
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                        LASER PROPERTIES
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'''
+
 
 config.cycles = 40
 config.ppcycle = 200
@@ -16,9 +28,18 @@ config.peak_intensity = 1e14
 config.pulse_shape = 'gaussian'
 config.pulse_duration = 120
 [t, pulse_omega, pulse_coefficients] = HHGBenitezFinal.generate_pulse(config)
-print(pulse_coefficients)
 config.omega = pulse_omega
 config.pulse_coefficients = pulse_coefficients
+
+
+'''
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                INTEGRATION AND TARGET PROPERTIES
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'''
+
+
+
 
 config.ionization_potential = 12.13
 
@@ -27,13 +48,6 @@ config.tau_dropoff_pts = 0.5
 
 # config.parallelize = True
 xv,yv,zv = [np.array([0]) for i in range(3)]
-
-
-'''
-
-All of the variables are defined and the code is called
-
-'''
 
 
 start = time.time()
@@ -45,10 +59,27 @@ c = 3e8
 w = c*2*pi/(config.wavelength*1e-3)
 responsebig = []
 
-
-
+def pwdf(omega,lconfig):
+    # omega = lconfig.omega
+    a = np.fft.ifft(np.conjugate(lconfig.pulse_coefficients),  axis=1)
+    # pulse_coefficients = lconfig.pulse_coefficients
+    E0_SI = np.sqrt(2*lconfig.peak_intensity*10000/299792458/8.854187817e-12)
+    E0 = sau(E0_SI, 'E', 'SAU', lconfig)
+    return E0 * a
 
 [omega1,response1] = HHGBenitezFinal.dipole_response(t,[[0,0,0]],config)
+
+
+
+
+
+'''
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                      PLOTTING FUNCTIONS
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+'''
+
+
 omega1 = omega1[np.where(omega1>valrang[0])]
 response1 = response1[np.where(omega1>valrang[0])]
 response1 = np.log(np.abs(response1[np.where(omega1<valrang[1])])**2)
@@ -66,7 +97,7 @@ axs[0].set_xlabel('High Harmonic Order')
 axs[0].set_ylabel('Intensity (arbitary log scale)')
 axs[0].set_title('Plot of Harmonic Response in Xenon and Pulse')
 
-axs[1].plot(pulse_omega,pulse_coefficients[0])
+axs[1].plot(omega1,pwdf(pulse_omega,config)[0][8002:])
 
 axs[1].set_xlabel('High Harmonic Order')
 axs[1].set_ylabel('Intensity (arbitary log scale)')
