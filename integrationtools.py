@@ -1,7 +1,3 @@
-'''
-This is probably a stupid idea, but my hate for Matlab is stronger than my regard for my own time and sanity
-'''
-
 import numpy as np
 import time
 from numpy import pi, sqrt, cos, sin, log
@@ -16,7 +12,7 @@ import matplotlib.pyplot as plt
 def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     '''
     
-    Calculates the dipole response, with the provided dipole elements dp
+    Calculates the dipole response, with the provided dipole elements dp,
     N - number of timesteps
     t - the timesteps to calculate (doesn't have to be equally spaced)
     Et - Electric field data
@@ -24,19 +20,16 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     '''
 
-    # start = time.time()
     Et = Et_data
     weights = lconfig.weights
     if at is None: at = np.ones_like(t)
     Ip = lconfig.Ip
-    # epsilon_t = lconfig.epsilon_t
     alpha = lconfig.alpha
     
     N = Et_data.size
     
-    # print('That took {}'.format(time.time()-start))
+
     prefactor = (2**3.5) * (alpha**1.25) / pi 
-    #d(p) = i * 2^3.5*alpha^1.25/pi * p/(p^2 + alpha)^3
     def dp(p):
         return 1j*prefactor*p/((np.square(p) + alpha)**3)
     
@@ -64,22 +57,10 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     Ct = np.cumsum(Ct)
 
     
-    # print('That took {}'.format(time.time()-start))
-    
-    # Now the meat and bones, am I Linus Torvalds, or just some schmuck
     # c**1.5 is 10x faster than c*np.sqrt(c)
 
     ws = weights.size
     c = (pi/(epsilon_t + 0.5*1j*t[:ws]))**1.5
-
-    # print('That took {}'.format(time.time()-start))
-    
-    '''
-# =============================================================================
-#     Currently technically finished, need to generate the data to check if it works
-#     Spoiler alert: He was not in fact finished (Written 2 months later whilst still fixing it)
-# =============================================================================
-    '''
 
     pst = np.array([(-np.roll(Bt,i)+Bt)/t[i] for i in range(1,ws)])
     error = np.ones(pst.shape)
@@ -89,12 +70,6 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
         error_complex[i,:(i+1)] = 0 + 0j 
         
     pst = pst*error
-    '''
-    Need to sit down and work through this loop again,
-    probably doing it wrong.
-    
-    '''
-    # print(pst[np.where(pst!=0)])
     
     argdstar = pst - np.reshape(np.tile(At,ws-1),(ws-1,At.size))
     argdstar = argdstar*error
@@ -116,9 +91,7 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     del temptBt
     del temptCt
-    # for tau in range(1,ws):
-    #     tempt = t[tau]+0j
-    #     Sst[tau-1,:] = Ip*(t[tau]) - (0.5/t[tau])*SQR(Bt - np.roll(Bt,tau)) + 0.5*(Ct - np.roll(Ct,tau))
+
 
     Sst = Sst*error_complex
 
