@@ -3,10 +3,9 @@ There is so much technical debt in this project that a complete rewrite is bette
 lets see how long it takes, starting at 10:48 Jan 21 2025
 '''
 import numpy as np
-import lewenstein
 import warnings
+from integrationtools import lewenstein 
 
-lewenstein = lewenstein.lewenstein
 class config:
     pass
 
