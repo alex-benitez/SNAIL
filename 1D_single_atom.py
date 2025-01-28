@@ -1,4 +1,8 @@
 '''
+This is an example of generating single atom response with a simple cos^2 pulse, documentation coming soon
+'''
+
+'''
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                                                                         INITIALIZATION
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -10,13 +14,16 @@ from numpy import pi, sqrt, cos, sin, log
 from numpy.linalg import norm
 import time 
 
-# start = time.time()
 config = HHGBenitezFinal.config()
 sau =  HHGBenitezFinal.sau_convert
 
+
 '''
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                                                                        LASER PROPERTIES
+                                                                        LASER PROPERTIES:
+-Cycles is the number of laser cycles that the pulse will have
+-ppcycle is the number of points per cycle, will determine the quality of the output, but increase processing time
+
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
 
@@ -30,7 +37,7 @@ config.pulse_duration = 120
 [t, pulse_omega, pulse_coefficients] = HHGBenitezFinal.generate_pulse(config)
 config.omega = pulse_omega
 config.pulse_coefficients = pulse_coefficients
-
+print(pulse_omega)
 
 '''
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -59,6 +66,7 @@ c = 3e8
 w = c*2*pi/(config.wavelength*1e-3)
 responsebig = []
 
+# This is just the plane wave driving field function from the main module Ive repurposed to draw the plot
 def pwdf(omega,lconfig):
     # omega = lconfig.omega
     a = np.fft.ifft(np.conjugate(lconfig.pulse_coefficients),  axis=1)
@@ -97,10 +105,10 @@ axs[0].set_xlabel('High Harmonic Order')
 axs[0].set_ylabel('Intensity (arbitary log scale)')
 axs[0].set_title('Plot of Harmonic Response in Xenon and Pulse')
 
-axs[1].plot(omega1,pwdf(pulse_omega,config)[0][8002:])
+axs[1].plot(t,pwdf(pulse_omega,config)[0])
 
-axs[1].set_xlabel('High Harmonic Order')
-axs[1].set_ylabel('Intensity (arbitary log scale)')
+# axs[1].set_xlabel('Time')
+# axs[1].set_ylabel('Intensity (arbitary log scale)')
 axs[1].set_title('Plot of Pulse')
 
 plt.tight_layout()

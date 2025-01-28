@@ -1,5 +1,4 @@
 import numpy as np
-import warnings
 from integrationtools import lewenstein 
 
 class config:
@@ -109,7 +108,7 @@ def generate_pulse(config):
     # Setup frequency axis
     domega = 2 * np.pi / (t[1] - t[0]) / len(t)
     temp = np.arange(len(t))
-    temp[temp >= np.ceil(len(temp) / 2)] -= len(temp)
+    temp[temp <= np.ceil(len(temp) / 2)] -= len(temp)
     omega = temp * domega
     
     # Fourier transform
@@ -148,6 +147,8 @@ def dipole_response(t,points,config):
     To avoid integration artifacts, a soft integration window is applied through
     the weights which multiply each integrand later, how it works is the weights
     are equal to 1 [0 -> tau_window_pts] and then drop off as cos^2
+    
+    The input field for this function must be fourier transformed, alongside the corresponding frequency axis
     '''
     if not hasattr(config, 'tau_window_length'):
         config.tau_window_length = 0.5
@@ -169,7 +170,8 @@ def dipole_response(t,points,config):
       
     else:  # avoid division by zero
         dropoff_factor = 0.5
-    
+    if tau_dropoff_pts < 2:
+        print('The value for tau_interval_length is too small, setting points integrated over to 2')
     dropoff = np.cos(dropoff_factor*np.arange(0,max(tau_dropoff_pts,2)))**2  
     weights[tau_window_pts:] = weights[tau_window_pts:] * dropoff
     
@@ -178,11 +180,17 @@ def dipole_response(t,points,config):
     config.Ip = Ip
     config.alpha = 2*Ip
     
-    t_window = np.cos(0.5 * np.arange(len(t))) ** 2
+    t_window = np.cos(0.5 * np.arange(len(t))) ** 2  # Apply  acos**2 window before the fourier transform to reduce artifacts
 
     omega = get_omega_axis(t,config)
     final = np.array([])
  
+    
+    # TODO: Implement a generator that uses numpy arrays for 3D spaces in the future, the current implementation is quite archaic
+    '''
+    https://stackoverflow.com/questions/44854593/any-object-that-exists-with-memory-usage-like-a-generator-but-can-return-a-numpy
+    '''
+
     for point in points:
         xi,yi,zi = point
         Et_cmc = np.real(plane_wave_driving_field(xi,yi,zi,config))
