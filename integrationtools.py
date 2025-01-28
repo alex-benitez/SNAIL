@@ -1,9 +1,4 @@
 import numpy as np
-import time
-from numpy import pi, sqrt, cos, sin, log
-from numpy.linalg import norm
-import scipy.constants as constants
-import matplotlib.pyplot as plt
 
     
     
@@ -29,7 +24,7 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     N = Et_data.size
     
 
-    prefactor = (2**3.5) * (alpha**1.25) / pi 
+    prefactor = (2**3.5) * (alpha**1.25) / np.pi 
     def dp(p):
         return 1j*prefactor*p/((np.square(p) + alpha)**3)
     
@@ -60,7 +55,7 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     # c**1.5 is 10x faster than c*np.sqrt(c)
 
     ws = weights.size
-    c = (pi/(epsilon_t + 0.5*1j*t[:ws]))**1.5
+    c = (np.pi/(epsilon_t + 0.5*1j*t[:ws]))**1.5
 
     pst = np.array([(-np.roll(Bt,i)+Bt)/t[i] for i in range(1,ws)])
     error = np.ones(pst.shape)
