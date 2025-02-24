@@ -57,13 +57,11 @@ def generate_pulse(config):
         Super Gaussian - Gaussian with a faster decline
         Cos Squared - 
     '''
-    
-    Npoints = config.ppcycle*config.cycles
-    times = config.wavelength*config.cycles/(3*(10**8))
-    # t = np.linspace(-times/2,times/2,Npoints)
-    # t = sau_convert(t, 't', 'sau', config)
-    t = 4*np.pi*np.arange(-40,40,0.005)
+
+    t = 2*np.pi*np.arange(-config.cycles/2,config.cycles/2,1/config.ppcycle)
     pult = sau_convert(config.pulse_duration*1e-15, 't', 'sau', config)
+    # t = pult
+    
 
     pulse_list = ['constant','gaussian','super_gaussian','cos_sqr','sin_sqr']
     
@@ -102,13 +100,13 @@ def generate_pulse(config):
         carrier = lambda x: np.exp(1j * x)
     else:
         raise ValueError("Invalid carrier: must be 'cos' or 'exp'")
-    print(envelope)
+    # print(envelope)
     amplitude = np.array([envelope*carrier(t)])
 
     # Setup frequency axis
     domega = 2 * np.pi / (t[1] - t[0]) / len(t)
     temp = np.arange(len(t))
-    temp[temp <= np.ceil(len(temp) / 2)] -= len(temp)
+    temp[temp >= np.ceil(len(temp) / 2)] -= len(temp)
     omega = temp * domega
     
     # Fourier transform
@@ -151,9 +149,11 @@ def dipole_response(t,points,config):
     The input field for this function must be fourier transformed, alongside the corresponding frequency axis
     '''
     if not hasattr(config, 'tau_window_length'):
-        config.tau_window_length = 0.5
+        config.tau_window_length = 1
+        print('Tau window length was not defined, setting to 1.0 as default')
     if not hasattr(config, 'tau_dropoff_pts'):
-        config.tau_dropoff_pts = 0.1
+        config.tau_dropoff_pts = 0.2
+        print('Tau dropoff length was not defined, setting to 0.2 as default')
     
         
     tau_window_pts    = int(config.ppcycle*config.tau_window_length) # The number of cycles to integrate over (can be less than one)
@@ -163,7 +163,6 @@ def dipole_response(t,points,config):
     
     
     weights = np.ones((1, tau_dropoff_pts + tau_window_pts))[0]
-    
     if tau_dropoff_pts > 1:
       
         dropoff_factor = pi/2 / (tau_dropoff_pts-1)
@@ -180,7 +179,7 @@ def dipole_response(t,points,config):
     config.Ip = Ip
     config.alpha = 2*Ip
     
-    t_window = np.cos(0.5 * np.arange(len(t))) ** 2  # Apply  acos**2 window before the fourier transform to reduce artifacts
+    t_window = np.cos(0.5 * np.arange(len(t))) ** 2
 
     omega = get_omega_axis(t,config)
     final = np.array([])
@@ -194,23 +193,24 @@ def dipole_response(t,points,config):
     for point in points:
         xi,yi,zi = point
         Et_cmc = np.real(plane_wave_driving_field(xi,yi,zi,config))
-        d_t = lewenstein(t,Et_cmc,config)*t_window
+        d_t = lewenstein(t,Et_cmc,config)#*t_window
+        print(d_t)
         # d_t(:,win_start:win_end) = d_t(:,win_start:win_end) .* repmat(t_window,components,1);
         
         
-        d_omega = np.conj(np.fft.fft(d_t))
+        d_omega = np.fft.fft(d_t) # Used to have the conjugate taken of it
         
         omega = omega[:d_omega.size]
-        d_omega = d_omega*np.exp(-1j*omega*t[0])*dt
+        # d_omega = d_omega*np.exp(-1j*omega*t[0])*dt
         
         
         
         final = np.append(final,d_omega)
-                # final = d_omega
-    response_cmc = final   
+
+    
                 
                 
-    return [omega,response_cmc]
+    return [omega,final]
         
     
     

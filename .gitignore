@@ -169,3 +169,8 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Numpy files and others
+*.npy
+*.m
+*.png
