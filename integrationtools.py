@@ -94,8 +94,9 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     for tau in range(1,ws):
         
 
-        integral[tau-1] = dstar[tau-1]*dnorm[tau-1]*np.roll(Et,tau)*(c[tau])*(np.cos(Sst[tau-1]) - 1j*np.sin(Sst[tau-1]))*weights[tau]*at*np.roll(at,tau)
-       
+        # integral[tau-1] = dstar[tau-1]*dnorm[tau-1]*np.roll(Et,tau)*(c[tau])*(np.cos(Sst[tau-1]) - 1j*np.sin(Sst[tau-1]))*weights[tau]*at*np.roll(at,tau)
+        integral[tau-1] = dstar[tau-1]*dnorm[tau-1]*(np.exp(-1j*Sst[tau-1]))
+        integral[tau-1] = integral[tau-1]*np.roll(Et,tau)*weights[tau]*at*np.roll(at,tau)*(c[tau])
     
     timeinterval  = np.array([np.ones(N)*(t[i] - t[i-1]) for i in range(1,ws)])
 
