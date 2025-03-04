@@ -23,7 +23,7 @@ sau =  HHGBenitezFinal.sau_convert
 '''
 
 
-config.cycles = 160
+config.calculation_cycles = 160
 config.ppcycle = 100
 config.wavelength = 1e-3
 config.peak_intensity = 1e14
@@ -73,7 +73,7 @@ points = [i*1000 for i in range(5,60)]
 # for pos,point in enumerate(points):
 #     for i in range(10):
 #         start = time.time()
-#         config.ppcycle = int(point/config.cycles)
+#         config.ppcycle = int(point/config.calculation_cycles)
 #         if point < 10000:
 #             config.tau_interval_length = 1
 #             config.tau_dropoff_pts = 0.5
