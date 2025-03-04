@@ -58,7 +58,7 @@ def generate_pulse(config):
         Cos Squared - 
     '''
 
-    t = 2*np.pi*np.arange(-config.cycles/2,config.cycles/2,1/config.ppcycle)
+    t = 2*np.pi*np.arange(-config.calculation_cycles/2,config.calculation_cycles/2,1/config.ppcycle)
     pult = sau_convert(config.pulse_duration*1e-15, 't', 'sau', config)
     # t = pult
     
@@ -104,15 +104,17 @@ def generate_pulse(config):
     amplitude = np.array([envelope*carrier(t)])
 
     # Setup frequency axis
-    domega = 2 * np.pi / (t[1] - t[0]) / len(t)
-    temp = np.arange(len(t))
-    temp[temp >= np.ceil(len(temp) / 2)] -= len(temp)
-    omega = temp * domega
+    # domega = 2 * np.pi / (t[1] - t[0]) / len(t)
+    # temp = np.arange(len(t))
+    # temp[temp >= np.ceil(len(temp) / 2)] -= len(temp)
+    # omega = temp * domega
     
     # Fourier transform
-    coefficients = np.conj(np.fft.fft(np.conj(amplitude), axis=1))
+    # coefficients = np.conj(np.fft.fft(np.conj(amplitude), axis=1))
+    E0_SI = np.sqrt(2*config.peak_intensity*10000/299792458/8.854187817e-12)
+    driving_field = amplitude*sau_convert(E0_SI, 'E', 'SAU', config)
     
-    return [t,omega,coefficients]
+    return [t,driving_field]
 
 
 
@@ -129,6 +131,10 @@ def get_omega_axis(t, config):
 
 
 def plane_wave_driving_field(x,y,z,config):
+    '''
+    Function leftover from when the field was stored as a fourier transform    
+    '''
+    
     omega = config.omega
     pulse_coefficients = config.pulse_coefficients
     E0_SI = np.sqrt(2*config.peak_intensity*10000/299792458/8.854187817e-12)
@@ -137,7 +143,7 @@ def plane_wave_driving_field(x,y,z,config):
 
 
 
-def dipole_response(t,points,config):
+def dipole_response(t,points,driving_field,config):
     dt = abs(t[1] - t[0])
     pi = np.pi
     
@@ -192,8 +198,8 @@ def dipole_response(t,points,config):
 
     for point in points:
         xi,yi,zi = point
-        Et_cmc = np.real(plane_wave_driving_field(xi,yi,zi,config))
-        d_t = lewenstein(t,Et_cmc,config)#*t_window
+        # Et_cmc = np.real(plane_wave_driving_field(xi,yi,zi,config))
+        d_t = lewenstein(t,driving_field,config)#*t_window
         print(d_t)
         # d_t(:,win_start:win_end) = d_t(:,win_start:win_end) .* repmat(t_window,components,1);
         

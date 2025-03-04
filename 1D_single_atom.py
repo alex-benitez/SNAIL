@@ -32,7 +32,7 @@ sau =  General_tools.sau_convert
 '''
 
 
-config.cycles = 50
+config.calculation_cycles = 50
 config.ppcycle = 200
 config.wavelength = 1e-3
 config.peak_intensity = 1e14
@@ -88,12 +88,10 @@ Up = 9.33*(config.peak_intensity/1e14)*(config.wavelength/1e-3)**2
 cutoff = (config.ionization_potential + 3.17*Up )/(hbar*w)
 print(cutoff)
 
-[t, pulse_omega, pulse_coefficients] = General_tools.generate_pulse(config)
-config.omega = pulse_omega
-config.pulse_coefficients = pulse_coefficients
-print(pulse_omega.size)
+[t, driving_field] = General_tools.generate_pulse(config)
+print(driving_field)
 start = time.time()
-[omega1,response1] = General_tools.dipole_response(t,[[0,0,0]],config)
+[omega1,response1] = General_tools.dipole_response(t,[[0,0,0]],driving_field,config)
 
 omega1 = omega1[np.where(omega1>valrang[0])]
 response1 = response1[np.where(omega1>valrang[0])]
@@ -112,7 +110,7 @@ axs[0].plot(omega1[np.where(omega1<valrang[1])],response1)
 
 # axs[0].set_xlabel('High Harmonic Order')`
 
-axs[1].plot(t,pwdf(pulse_coefficients,config)[0])
+axs[1].plot(t,driving_field[0])
 # axs[1].set_xlabel('Time')
 # axs[1].set_ylabel('Intensity (arbitary log scale)')
 # axs[1].set_title('Plot of Pulse')
