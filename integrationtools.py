@@ -50,7 +50,6 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
 
     Ct[0] = 0
     Ct = np.cumsum(Ct)
-
     
     # c**1.5 is 10x faster than c*np.sqrt(c)
 
@@ -58,6 +57,7 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     c = (np.pi/(epsilon_t + 0.5*1j*t[:ws]))**1.5
 
     pst = np.array([(-np.roll(Bt,i)+Bt)/t[i] for i in range(1,ws)])
+
     error = np.ones(pst.shape)
     error_complex = np.ones(pst.shape,dtype='complex')
     for i in range(ws-1):
@@ -65,7 +65,9 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
         error_complex[i,:(i+1)] = 0 + 0j 
         
     pst = pst*error
-    
+    print(error)
+    print(pst)
+    print(pst.shape)
     argdstar = pst - np.reshape(np.tile(At,ws-1),(ws-1,At.size))
     argdstar = argdstar*error
     argdnorm = pst - np.array([(np.roll(At,i)) for i in range(1,ws)])
@@ -82,7 +84,7 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     dt = np.diff(t)
     temptBt = np.array([(np.roll(Bt,i)) for i in range(1,ws)])
     temptCt = np.array([(np.roll(Ct,i)) for i in range(1,ws)])
-    Sst = -(0.5/np.reshape(t[1:ws],(1,ws-1)).T)*SQR(np.reshape(np.tile(Bt,ws-1),(ws-1,Bt.size))-temptBt) + 0.5*(np.reshape(np.tile(Ct,ws-1),(ws-1,Ct.size))-temptCt) + Ip*np.reshape(t[1:ws],(1,ws-1)).T
+    Sst = -(0.5/np.array([t[1:ws]]).T)*SQR(np.reshape(np.tile(Bt,ws-1),(ws-1,Bt.size))-temptBt) + 0.5*(np.reshape(np.tile(Ct,ws-1),(ws-1,Ct.size))-temptCt) + Ip*np.reshape(t[1:ws],(1,ws-1)).T
     
     del temptBt
     del temptCt

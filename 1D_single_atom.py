@@ -33,7 +33,7 @@ sau =  General_tools.sau_convert
 
 
 config.calculation_cycles = 50
-config.ppcycle = 200
+config.ppcycle = 800
 config.wavelength = 1e-3
 config.peak_intensity = 1e14
 config.pulse_shape = 'cos_sqr'
@@ -69,14 +69,6 @@ c = 3e8
 w = c*2*pi/(config.wavelength*1e-3)
 responsebig = []
 
-# This is just the plane wave driving field function from the main module Ive repurposed to draw the plot
-def pwdf(omega,lconfig):
-    # omega = lconfig.omega
-    a = np.fft.ifft(np.conjugate(lconfig.pulse_coefficients),  axis=1)
-    # pulse_coefficients = lconfig.pulse_coefficients
-    E0_SI = np.sqrt(2*lconfig.peak_intensity*10000/299792458/8.854187817e-12)
-    E0 = sau(E0_SI, 'E', 'SAU', lconfig)
-    return E0 * a
 
 
 '''
@@ -86,10 +78,10 @@ def pwdf(omega,lconfig):
 '''
 Up = 9.33*(config.peak_intensity/1e14)*(config.wavelength/1e-3)**2
 cutoff = (config.ionization_potential + 3.17*Up )/(hbar*w)
-print(cutoff)
+
 
 [t, driving_field] = General_tools.generate_pulse(config)
-print(driving_field)
+# print(driving_field)
 start = time.time()
 [omega1,response1] = General_tools.dipole_response(t,[[0,0,0]],driving_field,config)
 
