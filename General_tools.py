@@ -1,5 +1,6 @@
 import numpy as np
-from integrationtools import lewenstein 
+# from integrationtools import lewenstein
+from parallellewenstein import parallel_lewenstein as lewenstein
 
 class config:
     pass
