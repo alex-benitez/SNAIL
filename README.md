@@ -6,5 +6,4 @@ This code was inspired by HHGMax, and follows the same algorithm. The main integ
 
 Which calculates the dipole response of an electron ionized into the continuum by a strong laser field with no ground state depletion. For more information check out the docs and examples (work in progress).
 
-Test
 
