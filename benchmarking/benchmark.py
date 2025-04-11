@@ -1,13 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import HHGBenitezFinal
+import General_tools
 from numpy import pi, sqrt, cos, sin, log
 from numpy.linalg import norm
 import time 
 from scipy.io import loadmat
 
 firststart = time.time()
-config = HHGBenitezFinal.config()
+config = General_tools.config()
 sau =  HHGBenitezFinal.sau_convert
 
 
