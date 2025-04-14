@@ -8,7 +8,7 @@ from scipy.io import loadmat
 
 firststart = time.time()
 config = General_tools.config()
-sau =  HHGBenitezFinal.sau_convert
+sau =  General_tools.sau_convert
 
 
 '''
