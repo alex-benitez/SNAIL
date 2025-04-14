@@ -1,6 +1,7 @@
 import numpy as np
-# from integrationtools import lewenstein
-from parallellewenstein import parallel_lewenstein as lewenstein
+from integrationtools import lewenstein
+# from slowenstein import slowenstein as lewenstein
+# from parallellewenstein import parallel_lewenstein as lewenstein
 
 class config:
     pass
@@ -186,7 +187,8 @@ def dipole_response(t,points,driving_field,config):
     config.Ip = Ip
     config.alpha = 2*Ip
     
-    t_window = np.cos(0.5 * np.arange(len(t))) ** 2
+    wstart = t.size - 5*config.ppcycle
+    t_window = np.cos(0.5 * np.arange(t.size-wstart)) ** 2
 
     omega = get_omega_axis(t,config)
     final = np.array([])
@@ -196,17 +198,21 @@ def dipole_response(t,points,driving_field,config):
     '''
     https://stackoverflow.com/questions/44854593/any-object-that-exists-with-memory-usage-like-a-generator-but-can-return-a-numpy
     '''
-
+    
     for point in points:
         xi,yi,zi = point
         # Et_cmc = np.real(plane_wave_driving_field(xi,yi,zi,config))
         d_t = lewenstein(t,driving_field,config)#*t_window
-        print(d_t)
+
+        
+        
+        d_t[wstart:] = d_t[wstart:]*t_window 
         # d_t(:,win_start:win_end) = d_t(:,win_start:win_end) .* repmat(t_window,components,1);
         
         
-        d_omega = np.fft.fft(d_t) # Used to have the conjugate taken of it
-        
+        d_omega = np.conj(np.fft.fft(d_t)) # Used to have the conjugate taken of it
+        d_omega = d_omega*np.exp(-1j*omega*t[0])*(t[1]-t[0])
+        print(d_omega[2000:2100])
         omega = omega[:d_omega.size]
         # d_omega = d_omega*np.exp(-1j*omega*t[0])*dt
         

@@ -4,8 +4,8 @@
 \usepackage{fancyhdr} % only used to make the introduction page look nice
 %\usepackage{gentium}
 \usepackage{mathptmx} % Use Times Font
-%
-% Taken very gladly from Robert Jones
+\usepackage{minted}
+% Template taken very gladly from Robert Jones and expanded greatly for a third year project
 \usepackage[
     backend=biber,
     style = numeric
@@ -241,22 +241,131 @@ The last integral is very similar to a gaussian integral, and if we convert from
 \end{equation}
 Where the summation is over the saddle points, taking our saddle points that start and end in hte same place, we can finally write our integral in the form:
 \begin{equation}
-\mathbf{D}(t) = -\int_0^{\infty} d\tau \left( \frac{\pi}{\epsilon + i\tau/2}\right)^{3/2}\mathbf{d}^* (\mathbf{p}(t,\tau) + \mathbf{A}(t))\mathbf{d} (\mathbf{p}(t,\tau) + \mathbf{A}(t')) \mathbf{F}(t') e^{-iS(t,\tau)} + c.c.
+\mathbf{D}(t) = -\int_0^{\infty} d\tau \left( \frac{\pi}{\epsilon + i\tau/2}\right)^{3/2}\mathbf{F}(t')\: \mathbf{d} (\mathbf{p}(t,\tau) + \mathbf{A}(t'))\;\;\mathbf{d}^* (\mathbf{p}(t,\tau) + \mathbf{A}(t))  e^{-iS(t,\tau)} + c.c.
 	\label{FullIntegral}
 \end{equation}
-Where the action no longer depends on momentum, and the integral oscillates much more slowly. Despite a large number of approximations, except in the low harmonics, where our assumptions are not valid, this theory describes HHG very accurately. This is where a large majority of the processing time is taken up for SFA calculations, so optimization is essential. In the next chapter we will explore how vectorizing this integral using numpy can greatly speed up calculations.
+Where the action no longer depends on momentum, and the integral oscillates much more slowly. This integral can once again be explained intuitively, the prefactor accounts for the spread of the returning wavepacket, which can classically be thought of as the electron having lower chance of recombining the longer the excursion time. The field and the first dipole give the probability that the electron ionizes, and the second dipole is the probability of recombination. Finally, the last term is the action phase acquired by the electron during the excursion.
 \newpage
 \newgeometry{left=0.15\paperwidth, right=0.15\paperwidth, top=-0.01\paperheight, bottom=0.12\paperheight}
-\chapter*{SNAIL: An SFA library}
+\chapter{SNAIL: An SFA library}
 \vspace{-10mm}
-The aim of this project was to develop an open-source python library which can numerically integrate \eqref{FullIntegral}. I aimed to make it as computationally efficient as possible, to allow for Machine Learning (ML) applications and landscape studies, where several factors in a simulation are slowly changed to reveal novel effects.
-\section{Vectorization using Numpy}
+The aim of this project was to develop an open-source python library which can numerically integrate \eqref{FullIntegral}. I aimed to make it as computationally efficient as possible, to allow for Machine Learning (ML) applications and landscape studies, where several factors in a simulation are slowly changed to reveal novel effects. It is fully implemented on Python, and based on HHGMax\ref{MaxThesis}.
+\section{Integration Parameters}
+One final problem we encounter is \eqref{FullIntegral} has an infinite integration limit, however, we know that the prefactor will make any long excursions have a negligible effect, therefore we can set our integration limit to a large value without losing much accuracy. There is still a problem, where an arbitrary limit will create artifacts due to the oscillatory nature of the integral, to remedy this a 'soft' $cos^2$ window is applied past a certain $\tau_{d}$, until $\tau_{max} = 0$; a good $\tau_{max}$ value is 1.5 driving field cycles, which will capture the major contributions, however the window can be increased for further accuracy. We also have to define the ground state wavefunction, in \cite{lewensteinog} a scaled hydrogen-like potential is used, which takes into account the $I_p$ of the target.\\
 
+We are now equipped to begin integrating, after all our hard work, we can just use the trapezium rule. However, simply plugging in \eqref{FullIntegral} into a regular Python script will be incredibly slow, this is because Python 'for' loops carry out extra operations of no use to us, which increases the complexity to O($n^2$), without taking into account the actual operations.
 
+\section{Vectorization With Numpy}
+Numpy is a versatile Python library whose main benefit to us is a highly efficient implementation of matrices and matrix operations, which we will call arrays from now on. The main difference is Numpy allows for operations between arrays without the use of for loops; arrays are also stored in contiguous blocks of memory as opposed to Python lists which are stored as pointers, greatly increasing the access time. The drawback is finding ways to implement all of our calculations as matrix operations. To illustrate how to do this and the speedup, I will use the example of calculating $\mathbf{A(t)}$ from the driving field $\mathbf{E}(t)$, as stated before $\mathbf{A}(t) = -\int \mathbf{E}(t) \: dt$. Traditionally, calculating this in Python would look like this:
+\begin{minted}[fontsize=\small,linenos,numbersep= 7pt,xleftmargin=7pt]{python}
+import math
+t = [i*2*3.14159/1000 for i in range(1000)]
+Et = [math.cos(i) for i in t]
+At = [0 for i in range(1000)]
+for i in range(1,1000):
+	dt = t[i] - t[i-1]
+	temp = (Et[i] + Et[i-1])*dt/2
+	At[i] = temp
+\end{minted}
+The key steps in the for loop are: i) finding the time interval dt (for non evenly spaced t), ii) adding the current and previous values of the electric field multiplied by dt, iii) Assigning this value to the predefined At. Within each iteration of this loop, in addition to the already slow inbuilt for loop, there are 6 accesses to memory and 3 definitions.
+\newpage
+\newgeometry{left=0.15\paperwidth, right=0.15\paperwidth, top=0.08\paperheight, bottom=0.03\paperheight}
+\thispagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead{}
+\setlength{\footskip}{0pt}
 
+The key to vectorization is to find operations which require access from adjacent elements of a list at each step. For example, all of the values dt will take can be expressed as subtracting the array t with all the values shifted forward by 1, from the array t. A nice visualization of this is:
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{vectorsum.png}
+\end{figure}
 
+Here we have to be very careful with the elements at the beginning and the end of the array, in this case Numpy shifts the last element of the array to the front, meaning the first element of A(t) is unphysical. Luckily for us, whenever this happens, we can almost always set those elements to 0, since they are either actually 0 like in this case, or represent the electron before it ionizes. Using this principle and the function np.roll(), which shifts the values of an array by the specified number:
+\begin{minted}[fontsize=\small,linenos,numbersep= 7pt,xleftmargin=7pt]{python}
+t = np.linspace(0,2*np.pi,1000)
+Et = np.cos(t)
+dt = (-np.roll(t,1) + t)*0.5
+At = -(np.roll(Et,1) + Et)*dt 
+At[0] = 0
+At = np.cumsum(At)
+\end{minted}
+If we run both of these scripts 10000 times, not including imports since they are a negligible fraction of SNAIL's runtime, Numpy takes 0.77 seconds, whilst regular Python takes 10.5. Such a simple case is already an order of magnitude faster, and a more complicated implementation offers more chances for Numpy to speed up the code. One last trick for a speedup is generating large lists where each row is shifted forward by a different index, this can be done as follows:
 
+\begin{minted}[fontsize=\small,linenos,numbersep= 7pt,xleftmargin=7pt]{python}
+ws = weights.size
+bigAt = np.reshape(np.tile(At,ws-1),(ws-1,At.size))
+temptAt = bigAt[np.c_[:bigAt.shape[0]] , 
+(np.r_[:bigAt.shape[1]] - np.c_[1:ws]) % bigAt.shape[1]]
+\end{minted}
+This starts with np.tile, which repeats an array n times, here, it creates an array with At repeated ws-1 times, and then reshapes it into the form (ws-1,N), where N is the number of timesteps. This shape of (ws-1,N) is the basic shape of our array, where rows are trajectories with increasing excursion times and columns are timesteps forward. The reason why it is only ws-1 is because the first line is excursion times of 0 which are ignored. The next line generates an array where each line is shifted forward by one more than the previous, the first expression np.c\_[:bigAt.shape[0]] creates a column vector from 0 to ws. In the second expression, np.r\_[:ws] generates a row vector which has a column vector subtracted from it; this generates a (N,ws) matrix which has the modulus taken by its own height, quickly creating the matrix we need, it can be visualized as:
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{matrix_operations.png}
+\end{figure}
+
+\newpage
+\newgeometry{left=0.15\paperwidth, right=0.15\paperwidth, top=0.12\paperheight, bottom=0.12\paperheight}
+\section{The Lewenstein Integral}
+With this technique in hand, we can begin to calculate the integral, the code begins by defining a set of useful arrays, namely At, $B(t) = \int dt A(t)$ and $C(t) = \int dt A(t)^2$:
+\begin{minted}[fontsize=\small,linenos,numbersep= 7pt,xleftmargin=7pt]{python}
+At = -(np.roll(Et,1) + Et)*dt 
+At = np.squeeze(At) # This removes extra dimensions that might arise from improper formatting 
+At[0] = 0
+At = np.cumsum(At)
+Bt = (np.roll(At,1) + At)*dt
+Bt[0] = 0
+Bt = np.cumsum(Bt)
+Ct = (np.square(np.roll(At,1)) + np.square(At))*dt
+Ct[0] = (0,0,0)
+Ct = np.cumsum(Ct)
+\end{minted}
+Afterwards we calculate the momentum and both dipoles:
+\begin{minted}[fontsize=\small,linenos,numbersep= 7pt,xleftmargin=7pt]{python}
+ws = weights.size
+c = (np.pi/(epsilon_t + 0.5*1j*t[:ws]))**1.5
+pst = (bigBt - temptBt)/np.c_[t[1:ws]]
+correction = np.r_[:pst.shape[1]] > np.c_[:pst.shape[0]]    
+pst = pst*correction
+argdstar = pst - bigAt
+argdstar = argdstar*correction
+argdnorm = pst - temptAt
+argdnorm = argdnorm*(correction)
+
+dstar = np.conjugate(dp(argdstar))
+dnorm = dp(argdnorm)
+dnorm = dnorm*correction
+dstar = dstar*correction
+\end{minted}
+
+First are the weights, an array storing the multiplicative factor of the integration window mentioned earlier, this is automatically calculated according to the parameters set by the user. Afterwards, we calculate the prefactor c, which will be stored in an array as big as the weights, meaning each integration step has a different c. Then we calculate pst, which is the momentum for a given excursion time. Correction is a matrix to eliminate parts of the trajectories which are unphysical as previously mentioned. It is created similarly to the row-shift matrices, except it is filled with boolean values rather than integers, which avoids issues with complex-valued matrices. After this we calculate the action, and finally the integral:
+
+\begin{minted}[fontsize=\small,linenos,numbersep= 7pt,xleftmargin=7pt]{python}
+SQR = np.square
+Sst = -(0.5/np.array([t[1:ws]]).T)*SQR(bigBt - temptBt) 
+	+ 0.5*(bigCt-temptCt) + Ip*np.reshape(t[1:ws],(1,ws-1)).T
+del temptBt
+del temptCt
+Sst = Sst*correction
+integral = dstar*dnorm*np.exp(-1j*Sst)*temptEt*(np.c_[weights[1:]])
+		*(np.c_[c[1:]])*(bigat)*temptat
+output = np.cumsum(integral,0)[-1]
+\end{minted}
+
+\section{Auxiliary functions and parallelization}
+The Lewenstein module is the critical part of the library, but the bulk of the code is found in the auxiliary functions, these give the user the necessary tools to create the beam and set the parameters for the experiment. This part of the project required discussion with researchers on the best way to format the code for the wider community. The main functions are:
+\begin{description}
+\item[config] This is the class that stores all of the user defined variables throughout the code. The decision to use a class rather than pass variables when calling functions comes from many variables, like the wavelength, being used in different parts of the code, and different use cases requiring some variables and not others.
+\item[sau\_convert] All of the math is carried out in scaled atomic units (SAU), which vary depending on the driving pulse and target, this function provides the tools to convert SI units to those used by the code to increase ease of access and mitigate unit errors.
+\item[generate\_pulse] This function gives the user common driving field types and many options to tweak them, however, many users will want to generate their own fields; using a custom field only requires converting it to SAU.
+\item[dipole\_response] If lewenstein() is the engine, this is the rest of the car. This function takes the driving field and user set variables, sets up the integration interval, and passes all the necessary values to lewenstein(). It multiplies the response by $cos(t/2)^2$, and returns the fourier transform (FT). The multiplication reduces noise in the FT, and the FT allows direct observation of the harmonic spectrum.
+\end{description}
+
+This report focuses on the lewenstein() module, which runs on a single core, however, most users applying SNAIL to ML or landscape studies will have access to High Performance Computing (HPC). Due to this, there is a parallel\_lewenstein module which, as the name implies, allows the code to run in parallel over several cores. The code does this by finding the variables common to different processes, and making them available to each thread, then calculating a different response on each core; this speeds up regular calculation linearly with the number of cores, but memory increases slower due to the array caching.
+
+\section{Benchmarking and Results}
+Once the code was complete, verification was essential, in order to ensure the code was working properly, it must follow the cutoff law, where the plateau ends at $E = I_p + 3.17U_p$; and it must agree with previous libraries and experimental results. To test the cutoff law, we plot the response and draw a line where the cutoff should be.
 
 %\begin{equation}
 %\Psi^V_\mathbf{p} (\mathbf{r},t,t') \; = \; \frac{1}{(2\pi)^{3/2}}e^{-iS_V(\mathbf{p},t,t')}  %e^{i[\mathbf{p} + \mathbf{A}(t)]\cdot \mathbf{r}}
