@@ -23,7 +23,7 @@ sau =  General_tools.sau_convert
 '''
 
 
-config.calculation_cycles = 160
+config.calculation_cycles = 80
 config.ppcycle = 100
 config.wavelength = 1e-3
 config.peak_intensity = 1e14
@@ -69,46 +69,46 @@ def pwdf(omega,lconfig):
 
 valrang = [0,100]
 points = [i*1000 for i in range(5,60)]
-# timetaken = np.zeros((55,10))
-# for pos,point in enumerate(points):
-#     for i in range(10):
-#         start = time.time()
-#         config.ppcycle = int(point/config.calculation_cycles)
-#         if point < 10000:
-#             config.tau_interval_length = 1
-#             config.tau_dropoff_pts = 0.5
-#         else:
-#             config.tau_interval_length = 0.6
-#             config.tau_dropoff_pts = 0.5
-#         [t, pulse_omega, pulse_coefficients] = HHGBenitezFinal.generate_pulse(config)
-#         config.omega = pulse_omega
-#         config.pulse_coefficients = pulse_coefficients
-#         [omega1,response1] = HHGBenitezFinal.dipole_response(t,[[0,0,0]],config)
-#         timetaken[pos,i] = time.time()-start
-#         if point%10000 == 0:
-#             print(timetaken)
-        # if point%10000 == 0:
-        #     fig,axs = plt.subplots(1,1)
-        #     omega1 = omega1[np.where(omega1>valrang[0])]
-        #     response1 = response1[np.where(omega1>valrang[0])]
-        #     response1 = np.log(np.abs(response1[np.where(omega1<valrang[1])])**2)
-        #     axs.plot(omega1[np.where(omega1<valrang[1])],response1)
+timetaken = np.zeros((55,10))
+for pos,point in enumerate(points):
+    for i in range(10):
+
+        config.ppcycle = int(point/config.calculation_cycles)
+        if point < 10000:
+            config.tau_interval_length = 1
+            config.tau_dropoff_pts = 0.5
+        else:
+            config.tau_interval_length = 1
+            config.tau_dropoff_pts = 0.5
+        start = time.time()
+        [t, pulse_coefficients] = General_tools.generate_pulse(config)
+
+        [omega1,response1] = General_tools.dipole_response(t,[[0,0,0]],pulse_coefficients,config)
+        timetaken[pos,i] = time.time()-start
+        if point%10000 == 0:
+            print(timetaken)
+        if point%10000 == 0:
+            fig,axs = plt.subplots(1,1)
+            omega1 = omega1[np.where(omega1>valrang[0])]
+            response1 = response1[np.where(omega1>valrang[0])]
+            response1 = np.log(np.abs(response1[np.where(omega1<valrang[1])])**2)
+            axs.plot(omega1[np.where(omega1<valrang[1])],response1)
     
-        #     axs.set_xlabel('Time')
-        #     axs.set_ylabel('Intensity (arbitary log scale)')
-        #     axs.set_title('Plot of Pulse')
+            axs.set_xlabel('Time')
+            axs.set_ylabel('Intensity (arbitary log scale)')
+            axs.set_title('Plot of Pulse')
     
-        #     plt.tight_layout()
-        #     plt.show()
-        #     plt.clf()
-        #     plt.close('all')
+            plt.tight_layout()
+            plt.show()
+            plt.clf()
+            plt.close('all')
             
-        # print('For {} points it took {} seconds'.format(t.size,time.time()-start))
+        print('For {} points it took {} seconds'.format(t.size,time.time()-start))
     
     
-# np.save('/home/alex/Desktop/Python/HHGBenitez/benchsnail.npy',timetaken)
-timetaken = np.load('/home/alex/Desktop/Python/HHGBenitez/benchsnail.npy')
-maxtaken = loadmat('/home/alex/Desktop/Python/HHGBenitez/benchmax.m',appendmat=False)['biglist'][0][1:-1]
+np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/benchsnail.npy',timetaken)
+timetaken = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/benchsnail.npy')
+maxtaken = loadmat('/home/alex/Desktop/Python/SNAIL/benchmarking/benchmax.m',appendmat=False)['biglist'][0][1:-1]
 maxtaken[0] = 0.20
 print(maxtaken.size)
 # color='tab:blue'

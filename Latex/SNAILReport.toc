@@ -7,3 +7,6 @@
 \contentsline {section}{\numberline {2.2}Vectorization With Numpy}{6}{section.2.2}%
 \contentsline {section}{\numberline {2.3}The Lewenstein Integral}{8}{section.2.3}%
 \contentsline {section}{\numberline {2.4}Auxiliary functions and parallelization}{9}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Verification}{9}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Benchmarking}{11}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Final Discussion and Future Work}{12}{section.2.7}%

@@ -1,7 +1,7 @@
 import numpy as np
-from integrationtools import lewenstein
+# from integrationtools import lewenstein
 # from slowenstein import slowenstein as lewenstein
-# from parallellewenstein import parallel_lewenstein as lewenstein
+from parallellewenstein import parallel_lewenstein as lewenstein
 
 class config:
     pass
@@ -115,7 +115,8 @@ def generate_pulse(config):
     # coefficients = np.conj(np.fft.fft(np.conj(amplitude), axis=1))
     E0_SI = np.sqrt(2*config.peak_intensity*10000/299792458/8.854187817e-12)
     driving_field = amplitude*sau_convert(E0_SI, 'E', 'SAU', config)
-    
+    t = 2*np.pi*np.arange(-config.calculation_cycles/2,config.calculation_cycles/2,1/config.ppcycle)+ 1/config.ppcycle +2*np.pi*config.calculation_cycles/2
+
     return [t,driving_field]
 
 
@@ -189,6 +190,7 @@ def dipole_response(t,points,driving_field,config):
     
     wstart = t.size - 5*config.ppcycle
     t_window = np.cos(0.5 * np.arange(t.size-wstart)) ** 2
+    wind = np.sin((np.pi*t)/t[-1])**2
 
     omega = get_omega_axis(t,config)
     final = np.array([])
@@ -203,16 +205,16 @@ def dipole_response(t,points,driving_field,config):
         xi,yi,zi = point
         # Et_cmc = np.real(plane_wave_driving_field(xi,yi,zi,config))
         d_t = lewenstein(t,driving_field,config)#*t_window
-
         
         
-        d_t[wstart:] = d_t[wstart:]*t_window 
+        
+        # d_t[wstart:] = d_t[wstart:]*t_window 
+        d_t = d_t*wind
         # d_t(:,win_start:win_end) = d_t(:,win_start:win_end) .* repmat(t_window,components,1);
         
         
         d_omega = np.conj(np.fft.fft(d_t)) # Used to have the conjugate taken of it
         d_omega = d_omega*np.exp(-1j*omega*t[0])*(t[1]-t[0])
-        print(d_omega[2000:2100])
         omega = omega[:d_omega.size]
         # d_omega = d_omega*np.exp(-1j*omega*t[0])*dt
         
