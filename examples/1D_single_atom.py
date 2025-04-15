@@ -32,12 +32,12 @@ sau =  General_tools.sau_convert
 '''
 
 
-config.calculation_cycles = 50
+config.calculation_cycles = 60
 config.ppcycle = 200
 config.wavelength = 1e-3
 config.peak_intensity = 1e14
 config.pulse_shape = 'cos_sqr'
-config.pulse_duration = 40
+config.pulse_duration = 35
 
 
 # print(pulse_omega.size)
@@ -53,7 +53,7 @@ config.pulse_duration = 40
 
 config.ionization_potential = 12.13
 
-config.tau_window_length = 0.65# How far back over excursion time to integrate over, as a fraction of a cycle
+config.tau_window_length = 1.1# How far back over excursion time to integrate over, as a fraction of a cycle
 config.tau_dropoff_pts = 0.4 # Fraction of the integration window past which the integrands drop off to prevent artifacts
 
 # config.parallelize = True
@@ -106,19 +106,24 @@ diff = abs(matlabarray[:-1]-output)
 print('That took {} seconds'.format(time.time()-firststart)) 
 
 
-fig,axs = plt.subplots(2,1)
+fig,axs = plt.subplots(2,1,figsize=(7,4))
+
 # axs[0].plot(omega1,response1)
 axs[0].plot(omega1[np.where(omega1<valrang[1])],response1)
-axs[0].vlines(int(cutoff),min(response1),max(response1),'k',linewidth=0.5)
+axs[0].set_title('Harmonic Response of a Gaussian Pulse')
+axs[0].set_xlabel('Harmonic Order')
+axs[0].set_ylabel('Int. (Arb. log Scale)')
+
+# axs[0].vlines(int(cutoff),min(response1),max(response1),'k',linewidth=0.5)
 
 # axs[0].set_xlabel('High Harmonic Order')`
 t_fs = General_tools.sau_convert(t,'t','SI',config)/1e-15
 axs[1].plot(t_fs,driving_field[0])
-# axs[1].set_xlabel('Time')
-# axs[1].set_ylabel('Intensity (arbitary log scale)')
-# axs[1].set_title('Plot of Pulse')
+axs[1].set_xlabel('Time(fs)')
+axs[1].set_ylabel('Int. (Arb. Scale)')
+# axs[1].set_title('Gaussian Pulse')
 
-plt.savefig('/home/alex/Desktop/meetingplot.png',dpi=300)
+plt.savefig('/home/alex/Desktop/Python/SNAIL/Latex/simpleharmonic.png',dpi=300)
 plt.tight_layout()
 plt.show()
 

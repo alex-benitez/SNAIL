@@ -11,7 +11,7 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     '''
 
-    Et = Et_data
+    Et = np.squeeze(Et_data)
     weights = lconfig.weights
     if at is None: at = np.ones_like(t)
     Ip = lconfig.Ip
@@ -48,7 +48,6 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     # Section above is 2 orders of magnitude faster than using for loops (0.04641/0.00031)
 
     ws = weights.size
-    print(ws)
     bigAt = np.reshape(np.tile(At,ws),(ws,At.size))
     temptAt = bigAt[np.c_[:bigAt.shape[0]], (np.r_[:bigAt.shape[1]] - np.c_[:ws]) % bigAt.shape[1]]
 
@@ -99,7 +98,6 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     temptat = bigat[np.c_[:bigat.shape[0]], (np.r_[:bigat.shape[1]] - np.c_[:ws]) % bigat.shape[1]]
     
     integral = dstar*dnorm*np.exp(-1j*Sst)*temptEt*(np.c_[weights])*(np.c_[c])*(bigat)*temptat
-    print('hurra')
     # for tau in range(ws):
     #     integral[tau] = dstar[tau]*dnorm[tau]*np.roll(Et,tau)*(c[tau])*np.exp(-1j*Sst)*weights[tau]*at*np.roll(at,tau)
        
@@ -117,7 +115,6 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     # integral = integral*error
     output = 2*np.imag(np.cumsum(integral,0)[-1])
-    # np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/output')
 
     return output
 
