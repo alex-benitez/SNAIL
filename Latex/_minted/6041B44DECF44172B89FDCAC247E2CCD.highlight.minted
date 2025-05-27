@@ -1,0 +1,16 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{n}{ws} \PYG{o}{=} \PYG{n}{weights}\PYG{o}{.}\PYG{n}{size}
+\PYG{n}{c} \PYG{o}{=} \PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{o}{/}\PYG{p}{(}\PYG{n}{epsilon\PYGZus{}t} \PYG{o}{+} \PYG{l+m+mf}{0.5}\PYG{o}{*}\PYG{l+m+mi}{1}\PYG{n}{j}\PYG{o}{*}\PYG{n}{t}\PYG{p}{[}\PYG{p}{:}\PYG{n}{ws}\PYG{p}{]}\PYG{p}{)}\PYG{p}{)}\PYG{o}{*}\PYG{o}{*}\PYG{l+m+mf}{1.5}
+\PYG{n}{pst} \PYG{o}{=} \PYG{p}{(}\PYG{n}{bigBt} \PYG{o}{\PYGZhy{}} \PYG{n}{temptBt}\PYG{p}{)}\PYG{o}{/}\PYG{n}{np}\PYG{o}{.}\PYG{n}{c\PYGZus{}}\PYG{p}{[}\PYG{n}{t}\PYG{p}{[}\PYG{p}{:}\PYG{n}{ws}\PYG{p}{]}\PYG{p}{]}
+\PYG{n}{correction} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{r\PYGZus{}}\PYG{p}{[}\PYG{p}{:}\PYG{n}{pst}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{]} \PYG{o}{\PYGZgt{}} \PYG{n}{np}\PYG{o}{.}\PYG{n}{c\PYGZus{}}\PYG{p}{[}\PYG{p}{:}\PYG{n}{pst}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{]}
+\PYG{n}{pst} \PYG{o}{=} \PYG{n}{pst}\PYG{o}{*}\PYG{n}{correction}
+\PYG{n}{argdstar} \PYG{o}{=} \PYG{n}{pst} \PYG{o}{\PYGZhy{}} \PYG{n}{bigAt}
+\PYG{n}{argdstar} \PYG{o}{=} \PYG{n}{argdstar}\PYG{o}{*}\PYG{n}{correction}
+\PYG{n}{argdnorm} \PYG{o}{=} \PYG{n}{pst} \PYG{o}{\PYGZhy{}} \PYG{n}{temptAt}
+\PYG{n}{argdnorm} \PYG{o}{=} \PYG{n}{argdnorm}\PYG{o}{*}\PYG{p}{(}\PYG{n}{correction}\PYG{p}{)}
+
+\PYG{n}{dstar} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{conjugate}\PYG{p}{(}\PYG{n}{dp}\PYG{p}{(}\PYG{n}{argdstar}\PYG{p}{)}\PYG{p}{)}
+\PYG{n}{dnorm} \PYG{o}{=} \PYG{n}{dp}\PYG{p}{(}\PYG{n}{argdnorm}\PYG{p}{)}
+\PYG{n}{dnorm} \PYG{o}{=} \PYG{n}{dnorm}\PYG{o}{*}\PYG{n}{correction}
+\PYG{n}{dstar} \PYG{o}{=} \PYG{n}{dstar}\PYG{o}{*}\PYG{n}{correction}
+\end{MintedVerbatim}
