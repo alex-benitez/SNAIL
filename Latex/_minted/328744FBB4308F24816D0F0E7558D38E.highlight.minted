@@ -1,6 +1,0 @@
-\begin{MintedVerbatim}[commandchars=\\\{\}]
-\PYG{n}{ws} \PYG{o}{=} \PYG{n}{weights}\PYG{o}{.}\PYG{n}{size}
-\PYG{n}{bigAt} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{reshape}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{tile}\PYG{p}{(}\PYG{n}{At}\PYG{p}{,}\PYG{n}{ws}\PYG{p}{)}\PYG{p}{,}\PYG{p}{(}\PYG{n}{ws}\PYG{p}{,}\PYG{n}{At}\PYG{o}{.}\PYG{n}{size}\PYG{p}{)}\PYG{p}{)}
-\PYG{n}{temptAt} \PYG{o}{=} \PYG{n}{bigAt}\PYG{p}{[}\PYG{n}{np}\PYG{o}{.}\PYG{n}{c\PYGZus{}}\PYG{p}{[}\PYG{p}{:}\PYG{n}{bigAt}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{]} \PYG{p}{,}
-\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{r\PYGZus{}}\PYG{p}{[}\PYG{p}{:}\PYG{n}{bigAt}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{]} \PYG{o}{\PYGZhy{}} \PYG{n}{np}\PYG{o}{.}\PYG{n}{c\PYGZus{}}\PYG{p}{[}\PYG{p}{:}\PYG{n}{ws}\PYG{p}{]}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{n}{bigAt}\PYG{o}{.}\PYG{n}{shape}\PYG{p}{[}\PYG{l+m+mi}{1}\PYG{p}{]}\PYG{p}{]}
-\end{MintedVerbatim}
