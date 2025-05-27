@@ -171,7 +171,7 @@ cython_debug/
 .pypirc
 
 # Numpy files and others
-
+AnneData
 *.npy
 *.m
 *.png
