@@ -1,14 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import General_tools
+import general_tools
 from numpy import pi, sqrt, cos, sin, log
 from numpy.linalg import norm
 import time 
 from scipy.io import loadmat
 
 firststart = time.time()
-config = General_tools.config()
-sau =  General_tools.sau_convert
+config = general_tools.config()
+sau =  general_tools.sau_convert
 
 
 '''
@@ -81,9 +81,9 @@ for pos,point in enumerate(points):
             config.tau_interval_length = 1
             config.tau_dropoff_pts = 0.5
         start = time.time()
-        [t, pulse_coefficients] = General_tools.generate_pulse(config)
+        [t, pulse_coefficients] = general_tools.generate_pulse(config)
 
-        [omega1,response1] = General_tools.dipole_response(t,[[0,0,0]],pulse_coefficients,config)
+        [omega1,response1] = general_tools.dipole_response(t,[[0,0,0]],pulse_coefficients,config)
         timetaken[pos,i] = time.time()-start
         if point%10000 == 0:
             print(timetaken)

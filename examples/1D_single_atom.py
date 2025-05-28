@@ -9,15 +9,15 @@ This is an example of generating single atom response with a simple cos^2 pulse,
 '''
 import numpy as np
 import matplotlib.pyplot as plt
-import General_tools
+import general_tools
 from numpy import pi, sqrt, cos, sin, log
 from numpy.linalg import norm
 import time 
 from scipy.io import loadmat
 
 firststart = time.time()
-config = General_tools.config()
-sau =  General_tools.sau_convert
+config = general_tools.config()
+sau =  general_tools.sau_convert
 
 
 '''
@@ -88,10 +88,10 @@ matlabarray = [float(i) for i in matlabarray]
 
     
 
-[t, driving_field] = General_tools.generate_pulse(config)
+[t, driving_field] = general_tools.generate_pulse(config)
 # print(driving_field)
 start = time.time()
-[omega1,response1] = General_tools.dipole_response(t,[[0,0,0]],driving_field,config)
+[omega1,response1] = general_tools.dipole_response(t,[[0,0,0]],driving_field,config)
 
 omega1 = omega1[np.where(omega1>valrang[0])]
 response1 = response1[np.where(omega1>valrang[0])]
@@ -117,7 +117,7 @@ axs[0].set_ylabel('Int. (Arb. log Scale)')
 # axs[0].vlines(int(cutoff),min(response1),max(response1),'k',linewidth=0.5)
 
 # axs[0].set_xlabel('High Harmonic Order')`
-t_fs = General_tools.sau_convert(t,'t','SI',config)/1e-15
+t_fs = general_tools.sau_convert(t,'t','SI',config)/1e-15
 axs[1].plot(t_fs,driving_field[0])
 axs[1].set_xlabel('Time(fs)')
 axs[1].set_ylabel('Int. (Arb. Scale)')

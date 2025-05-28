@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import General_tools
+import general_tools
 pi = np.pi
-config = General_tools.config()
-sau =  General_tools.sau_convert
+config = general_tools.config()
+sau =  general_tools.sau_convert
 plt.ioff()
 
 
@@ -27,8 +27,8 @@ fig,axs = plt.subplots(1,1,figsize=(6,4))
 for i in range(5):
     config.ionization_potential = 12 + 0.3*i
     config.peak_intensity = 1e14 + 0.12e14*i
-    [t, driving_field] = General_tools.generate_pulse(config)
-    [omega1,response1] = General_tools.dipole_response(t,[[0,0,0]],driving_field,config)
+    [t, driving_field] = general_tools.generate_pulse(config)
+    [omega1,response1] = general_tools.dipole_response(t,[[0,0,0]],driving_field,config)
 
     omega1 = omega1[np.where(omega1>valrang[0])]
     response1 = response1[np.where(omega1>valrang[0])]

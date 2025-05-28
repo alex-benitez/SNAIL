@@ -7,7 +7,7 @@ class config:
     pass
 
 def sau_convert(value,quantity,target,config):
-    '''
+    """
     Converts between standard SI units and atomic units, currently supports:
         e - Electric field
         u - Energy
@@ -15,7 +15,18 @@ def sau_convert(value,quantity,target,config):
         a - Area
         vol - Volume
         v - velocity
-    '''
+    
+    Args:
+        value (float): The quantity to convert.
+        quantity: The physical parameter that is being converted, e.g. e for electric field.
+        target (string): 'si' to convert to standard units and 'sau' to convert to scaled atomic units.
+        config (class): The config containing at least the wavelength
+        
+    Returns:
+        
+        float: Value converted to the corresponding unit system.
+    
+    """
     c = 299792458;
     hbar = 1.054571726e-34
     eq = 1.602176565e-19 # electron charge
