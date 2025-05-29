@@ -173,7 +173,7 @@ cython_debug/
 
 # Numpy files and others
 AnneData
-src/stored_arrays
+src/stored_arrays/
 *.npy
 *.m
-*.png
+
