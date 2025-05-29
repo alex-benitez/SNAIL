@@ -14,12 +14,7 @@ class config:
 def sau_convert(value,quantity,target,config):
     """
     Converts between standard SI units and atomic units, currently supports:
-        e - Electric field
-        u - Energy
-        s - Length
-        a - Area
-        vol - Volume
-        v - velocity
+        e - Electric field   u - Energy   s - Length   a - Area   vol - Volume   v - velocity
     
     Args:
         value (float): The quantity to convert.
@@ -70,7 +65,7 @@ def generate_pulse(config):
     Generates the driving pulse, forces the user to set a pulse type,
     currently supports pulse types:
         
-        Constant - Self explanatory
+        Constant - A constant envelope 
         Gaussian - Gaussian beam with no cutoff
         Super Gaussian - Gaussian with a faster decline
         Cos Squared - Cos squared envelope
@@ -80,6 +75,7 @@ def generate_pulse(config):
             - Calculation_cycles
             - Points per cycle
             - Pulse duration
+            - Pulse shape
     
     Returns:
         
