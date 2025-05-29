@@ -12,6 +12,7 @@ The current operational plans are:
     To do this I have to take the available cores and be like: Ok you get the first 1/4 of the tau integrals etc etc.
 
 '''
+
 def barebones_lewenstein(weights,start,N,lconfig,at=None,epsilon_t=1e-4):
     wp = weights.size
     end = start+wp
@@ -107,6 +108,10 @@ def parallel_lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     
     '''
+    if hasattr(lconfig,'cores'):
+        cores = lconfig.cores
+    else:
+        cores = cpu_count()-2
     try:
         # Deletes the cache if it already exists
         shm = shared_memory.SharedMemory(create=False, size=1,name='general_buffer')
@@ -127,7 +132,7 @@ def parallel_lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     N = Et_data.size
     ws = weights.size
-    cores = cpu_count()-2
+    
     split = int(ws/cores)
     
     # print('That took {}'.format(time.time()-start))
@@ -163,28 +168,7 @@ def parallel_lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     b = np.ndarray(general.shape, dtype=general.dtype, buffer=shm.buf)
     b[:] = general[:]
     del b
-    # print('tix')
-    # print(general[0][20000:20100])
-    
-    # print('tix')
 
-    
-    # shmAt = shared_memory.SharedMemory(create=True, size=At.nbytes,name='At_buffer')
-    # b = np.ndarray(At.shape, dtype=At.dtype, buffer=shmAt.buf)
-    # b[:] = At[:]
-    # del b
-    # shmBt = shared_memory.SharedMemory(create=True, size=Bt.nbytes,name='Bt_buffer')
-    # b = np.ndarray(Bt.shape, dtype=Bt.dtype, buffer=shmBt.buf)
-    # b[:] = Bt[:]
-    # del b
-    
-    # shm = shared_memory.SharedMemory(create=True, size=general.nbytes,name='general_buffer')
-    # b = np.ndarray(general.shape, dtype=general.dtype, buffer=shm.buf)
-    # b[:] = general[:]
-    
-    # shm = shared_memory.SharedMemory(create=True, size=general.nbytes,name='general_buffer')
-    # b = np.ndarray(general.shape, dtype=general.dtype, buffer=shm.buf)
-    # b[:] = general[:]
     
     
     

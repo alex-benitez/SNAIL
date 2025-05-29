@@ -4,6 +4,11 @@ import numpy as np
 from parallellewenstein import parallel_lewenstein as lewenstein
 
 class config:
+    """
+    This is the class that stores all of the information on laser and target properties, as well as calculation parameters. By default has parallelization enabled,
+    however, if you want to use a single core version which only requires numpy, set config.parallel to False.
+    """
+    parallel = True
     pass
 
 def sau_convert(value,quantity,target,config):
@@ -68,7 +73,18 @@ def generate_pulse(config):
         Constant - Self explanatory
         Gaussian - Gaussian beam with no cutoff
         Super Gaussian - Gaussian with a faster decline
-        Cos Squared - 
+        Cos Squared - Cos squared envelope
+    
+    Args:
+        config (class):
+            - Calculation_cycles
+            - Points per cycle
+            - Pulse duration
+    
+    Returns:
+        
+        t (array): The time array determined by the calculation cycles, with the step determined by ppc
+        driving_field (array): The electric field amplitude over time, same size as t
     '''
 
     t = 2*np.pi*np.arange(-config.calculation_cycles/2,config.calculation_cycles/2,1/config.ppcycle)
@@ -205,7 +221,12 @@ def dipole_response(t,points,driving_field,config):
 
     omega = get_omega_axis(t,config)
     final = np.array([])
- 
+    
+    if config.parallel == True:
+        from integration_tools import parallel_lewenstein as lewenstein
+    elif config.parallel == False:
+        from integration_tools import lewenstein 
+        
     
     # TODO: Implement a generator that uses numpy arrays for 3D spaces in the future, the current implementation is quite archaic
     '''
