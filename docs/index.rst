@@ -5,6 +5,9 @@
 
 Welcome to SNAIL's documentation!
 =================================
+What is SNAIL?
+=================================
+SNAIL (SFA Numerically Accelerated Integration Library) is a python library intended to quickly calculate the high harmonic response of atoms using the Strong Field Approximation (SFA). For more information on what HHG and SFA are, check out my final year report 'here <https://github.com/alex-benitez/SNAIL/blob/main/SNAILReport.pdf>'_.
 
 .. toctree::
    :maxdepth: 2
