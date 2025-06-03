@@ -16,6 +16,7 @@ This package is intended to be used for generating large datasets of HHG results
    :caption: Contents:
 	
    general_tools
+   examples
 
 
 Indices and tables

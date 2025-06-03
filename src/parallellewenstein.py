@@ -160,6 +160,8 @@ def parallel_lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
 
     Ct[0] = 0
     Ct = np.cumsum(Ct) 
+    
+    t = t-t[0]
 
     general = np.vstack((Et,At,Bt,Ct,t))
     

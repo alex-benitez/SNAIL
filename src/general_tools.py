@@ -11,6 +11,14 @@ class config:
     parallel = True
     pass
 
+def generate_t(config):
+    """
+    A function to generate the time axis in SAU, using the number of cycles 
+    """
+    
+    return 2*np.pi*np.arange(-config.calculation_cycles/2,config.calculation_cycles/2,1/config.ppcycle) 
+    
+
 def sau_convert(value,quantity,target,config):
     """
     Converts between standard SI units and atomic units, currently supports:
@@ -78,14 +86,11 @@ def generate_pulse(config):
             - Pulse shape
     
     Returns:
-        
-        t (array): The time array determined by the calculation cycles, with the step determined by ppc
         driving_field (array): The electric field amplitude over time, same size as t
     '''
-
-    t = 2*np.pi*np.arange(-config.calculation_cycles/2,config.calculation_cycles/2,1/config.ppcycle)
+    t = generate_t(config)
     pult = sau_convert(config.pulse_duration*1e-15, 't', 'sau', config)
-    # t = pult
+
     
 
     pulse_list = ['constant','gaussian','super_gaussian','cos_sqr','sin_sqr']
@@ -138,9 +143,7 @@ def generate_pulse(config):
     # coefficients = np.conj(np.fft.fft(np.conj(amplitude), axis=1))
     E0_SI = np.sqrt(2*config.peak_intensity*10000/299792458/8.854187817e-12)
     driving_field = amplitude*sau_convert(E0_SI, 'E', 'SAU', config)
-    t = 2*np.pi*np.arange(-config.calculation_cycles/2,config.calculation_cycles/2,1/config.ppcycle)+ 1/config.ppcycle +2*np.pi*config.calculation_cycles/2
-
-    return [t,driving_field]
+    return driving_field
 
 
 
@@ -169,7 +172,8 @@ def plane_wave_driving_field(x,y,z,config):
 
 
 
-def dipole_response(t,points,driving_field,config):
+def dipole_response(points,driving_field,config):
+    t = generate_t(config)
     dt = abs(t[1] - t[0])
     pi = np.pi
     
@@ -219,7 +223,7 @@ def dipole_response(t,points,driving_field,config):
     final = np.array([])
     
     if config.parallel == True:
-        from integration_tools import parallel_lewenstein as lewenstein
+        from parallellewenstein import parallel_lewenstein as lewenstein
     elif config.parallel == False:
         from integration_tools import lewenstein 
         
