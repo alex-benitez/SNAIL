@@ -1,6 +1,8 @@
 Examples
 ========
 
+Example pulse type
+
 .. tabs:
 
 	.. tab:: 1D Single Atom Single Field
