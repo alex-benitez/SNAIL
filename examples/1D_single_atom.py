@@ -36,8 +36,9 @@ config.calculation_cycles = 60
 config.ppcycle = 200
 config.wavelength = 1e-3
 config.peak_intensity = 1e14
-config.pulse_shape = 'cos_sqr'
+config.pulse_shape = 'gaussian'
 config.pulse_duration = 35 # In fs
+config.parallel = True
 
 
 # print(pulse_omega.size)
@@ -124,7 +125,7 @@ axs[1].set_xlabel('Time(fs)')
 axs[1].set_ylabel('Int. (Arb. Scale)')
 # axs[1].set_title('Gaussian Pulse')
 
-plt.savefig('/home/alex/Desktop/Python/SNAIL/Latex/simpleharmonic.png',dpi=300)
+plt.savefig('/home/alex/Desktop/Python/SNAIL/images/simpleharmonic.png',dpi=300)
 plt.tight_layout()
 plt.show()
 

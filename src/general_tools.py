@@ -1,7 +1,7 @@
 import numpy as np
-# from integrationtools import lewenstein
+from integration_tools import lewenstein
 # from slowenstein import slowenstein as lewenstein
-from parallellewenstein import parallel_lewenstein as lewenstein
+# from parallellewenstein import parallel_lewenstein as lewenstein
 
 class config:
     """
@@ -93,7 +93,7 @@ def generate_pulse(config):
 
     
 
-    pulse_list = ['constant','gaussian','super_gaussian','cos_sqr','sin_sqr']
+    pulse_list = ['constant','gaussian','super_gaussian','cos_sqr','sin_sqr','sin_6']
     
     if not hasattr(config,'pulse_shape') or (config.pulse_shape.lower() not in pulse_list):
         raise ValueError('You must specify a pulse shape from the following: {}'.format(pulse_list))
@@ -120,6 +120,13 @@ def generate_pulse(config):
         envelope = 1-np.cos(np.pi/2 +0.5*t / tau) ** 6
         envelope[t / tau <= -np.pi ] = 0
         envelope[t / tau >= np.pi ] = 0
+        
+    elif config.pulse_shape.lower() == 'sin_6': 
+        t = t - t[0] + 0.0001
+        tau = pult / 2 / np.arccos(1 / np.sqrt(np.sqrt(2)))
+        envelope = 1-np.sin(np.pi/2 +0.5*t / tau) ** 6
+        # envelope[np.pi/2 +0.5*t / tau <= 0 ] = 0
+        # envelope[np.pi/2 +0.5*t / tau >= 2*np.pi ] = 0
     
     else:
         raise ValueError('Wrong type of carrier, use one of the following: {}'.format(pulse_list))

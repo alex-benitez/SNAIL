@@ -1,73 +1,268 @@
 
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>general_tools &mdash; SNAIL  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>general_tools &#8212; SNAIL  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/js/theme.js"></script>
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/general_tools';</script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
-</head>
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            SNAIL
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../general_tools.html">general_tools Module</a></li>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/snailtransparent.png" class="logo__image only-light" alt="SNAIL  documentation - Home"/>
+    <script>document.write(`<img src="../_static/snailtransparent.png" class="logo__image only-dark" alt="SNAIL  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../general_tools.html">general_tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
 </ul>
 
-        </div>
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
       </div>
-    </nav>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">SNAIL</a>
-      </nav>
+<div class="sbt-scroll-pixel-helper"></div>
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
-      <li class="breadcrumb-item active">general_tools</li>
-      <li class="wy-breadcrumbs-aside">
-      </li>
-  </ul>
-  <hr/>
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <h1>Source code for general_tools</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="c1"># from integrationtools import lewenstein</span>
@@ -77,20 +272,31 @@
 <div class="viewcode-block" id="config">
 <a class="viewcode-back" href="../general_tools.html#general_tools.config">[docs]</a>
 <span class="k">class</span> <span class="nc">config</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This is the class that stores all of the information on laser and target properties, as well as calculation parameters. By default has parallelization enabled,</span>
+<span class="sd">    however, if you want to use a single core version which only requires numpy, set config.parallel to False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parallel</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">pass</span></div>
 
+
+<div class="viewcode-block" id="generate_t">
+<a class="viewcode-back" href="../general_tools.html#general_tools.generate_t">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_t</span><span class="p">(</span><span class="n">config</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function to generate the time axis in SAU, using the number of cycles </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">calculation_cycles</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">config</span><span class="o">.</span><span class="n">calculation_cycles</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">ppcycle</span><span class="p">)</span> </div>
+
+    
 
 <div class="viewcode-block" id="sau_convert">
 <a class="viewcode-back" href="../general_tools.html#general_tools.sau_convert">[docs]</a>
 <span class="k">def</span> <span class="nf">sau_convert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="n">quantity</span><span class="p">,</span><span class="n">target</span><span class="p">,</span><span class="n">config</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts between standard SI units and atomic units, currently supports:</span>
-<span class="sd">        e - Electric field</span>
-<span class="sd">        u - Energy</span>
-<span class="sd">        s - Length</span>
-<span class="sd">        a - Area</span>
-<span class="sd">        vol - Volume</span>
-<span class="sd">        v - velocity</span>
+<span class="sd">        e - Electric field   u - Energy   s - Length   a - Area   vol - Volume   v - velocity</span>
 <span class="sd">    </span>
 <span class="sd">    Args:</span>
 <span class="sd">        value (float): The quantity to convert.</span>
@@ -144,15 +350,24 @@
 <span class="sd">    Generates the driving pulse, forces the user to set a pulse type,</span>
 <span class="sd">    currently supports pulse types:</span>
 <span class="sd">        </span>
-<span class="sd">        Constant - Self explanatory</span>
+<span class="sd">        Constant - A constant envelope </span>
 <span class="sd">        Gaussian - Gaussian beam with no cutoff</span>
 <span class="sd">        Super Gaussian - Gaussian with a faster decline</span>
-<span class="sd">        Cos Squared - </span>
+<span class="sd">        Cos Squared - Cos squared envelope</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        config (class):</span>
+<span class="sd">            - Calculation_cycles</span>
+<span class="sd">            - Points per cycle</span>
+<span class="sd">            - Pulse duration</span>
+<span class="sd">            - Pulse shape</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        driving_field (array): The electric field amplitude over time, same size as t</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="n">t</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">calculation_cycles</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">config</span><span class="o">.</span><span class="n">calculation_cycles</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">ppcycle</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">generate_t</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="n">pult</span> <span class="o">=</span> <span class="n">sau_convert</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">pulse_duration</span><span class="o">*</span><span class="mf">1e-15</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span><span class="p">,</span> <span class="s1">&#39;sau&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-    <span class="c1"># t = pult</span>
+
     
 
     <span class="n">pulse_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span><span class="s1">&#39;gaussian&#39;</span><span class="p">,</span><span class="s1">&#39;super_gaussian&#39;</span><span class="p">,</span><span class="s1">&#39;cos_sqr&#39;</span><span class="p">,</span><span class="s1">&#39;sin_sqr&#39;</span><span class="p">]</span>
@@ -205,15 +420,11 @@
     <span class="c1"># coefficients = np.conj(np.fft.fft(np.conj(amplitude), axis=1))</span>
     <span class="n">E0_SI</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">config</span><span class="o">.</span><span class="n">peak_intensity</span><span class="o">*</span><span class="mi">10000</span><span class="o">/</span><span class="mi">299792458</span><span class="o">/</span><span class="mf">8.854187817e-12</span><span class="p">)</span>
     <span class="n">driving_field</span> <span class="o">=</span> <span class="n">amplitude</span><span class="o">*</span><span class="n">sau_convert</span><span class="p">(</span><span class="n">E0_SI</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;SAU&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-    <span class="n">t</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="n">config</span><span class="o">.</span><span class="n">calculation_cycles</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">config</span><span class="o">.</span><span class="n">calculation_cycles</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">ppcycle</span><span class="p">)</span><span class="o">+</span> <span class="mi">1</span><span class="o">/</span><span class="n">config</span><span class="o">.</span><span class="n">ppcycle</span> <span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">config</span><span class="o">.</span><span class="n">calculation_cycles</span><span class="o">/</span><span class="mi">2</span>
-
-    <span class="k">return</span> <span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="n">driving_field</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="n">driving_field</span></div>
 
 
 
 
-<div class="viewcode-block" id="get_omega_axis">
-<a class="viewcode-back" href="../general_tools.html#general_tools.get_omega_axis">[docs]</a>
 <span class="k">def</span> <span class="nf">get_omega_axis</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
 
     <span class="n">dt</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -222,13 +433,10 @@
     <span class="n">temp</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
     <span class="n">omega</span> <span class="o">=</span> <span class="n">temp</span><span class="o">*</span><span class="n">domega</span>
     
-    <span class="k">return</span> <span class="n">omega</span></div>
+    <span class="k">return</span> <span class="n">omega</span>
 
 
 
-
-<div class="viewcode-block" id="plane_wave_driving_field">
-<a class="viewcode-back" href="../general_tools.html#general_tools.plane_wave_driving_field">[docs]</a>
 <span class="k">def</span> <span class="nf">plane_wave_driving_field</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">config</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Function leftover from when the field was stored as a fourier transform    </span>
@@ -238,14 +446,14 @@
     <span class="n">pulse_coefficients</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">pulse_coefficients</span>
     <span class="n">E0_SI</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">config</span><span class="o">.</span><span class="n">peak_intensity</span><span class="o">*</span><span class="mi">10000</span><span class="o">/</span><span class="mi">299792458</span><span class="o">/</span><span class="mf">8.854187817e-12</span><span class="p">)</span>
     <span class="n">E0</span> <span class="o">=</span> <span class="n">sau_convert</span><span class="p">(</span><span class="n">E0_SI</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;SAU&#39;</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">E0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">pulse_coefficients</span><span class="p">),</span>  <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
-
+    <span class="k">return</span> <span class="n">E0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">pulse_coefficients</span><span class="p">),</span>  <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 
 
 <div class="viewcode-block" id="dipole_response">
 <a class="viewcode-back" href="../general_tools.html#general_tools.dipole_response">[docs]</a>
-<span class="k">def</span> <span class="nf">dipole_response</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">points</span><span class="p">,</span><span class="n">driving_field</span><span class="p">,</span><span class="n">config</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">dipole_response</span><span class="p">(</span><span class="n">points</span><span class="p">,</span><span class="n">driving_field</span><span class="p">,</span><span class="n">config</span><span class="p">):</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">generate_t</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
     <span class="n">dt</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">pi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
 <span class="w">    </span>
@@ -293,7 +501,12 @@
 
     <span class="n">omega</span> <span class="o">=</span> <span class="n">get_omega_axis</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">config</span><span class="p">)</span>
     <span class="n">final</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
- 
+    
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">parallel</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">parallellewenstein</span> <span class="kn">import</span> <span class="n">parallel_lewenstein</span> <span class="k">as</span> <span class="n">lewenstein</span>
+    <span class="k">elif</span> <span class="n">config</span><span class="o">.</span><span class="n">parallel</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">integration_tools</span> <span class="kn">import</span> <span class="n">lewenstein</span> 
+        
     
     <span class="c1"># TODO: Implement a generator that uses numpy arrays for 3D spaces in the future, the current implementation is quite archaic</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
@@ -360,31 +573,70 @@
     
 </pre></div>
 
-           </div>
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
           </div>
-          <footer>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Alex Benitez
+</p>
 
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2025, Alex Benitez.</p>
   </div>
+  
+  <div class="footer-item">
+    
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+  <p class="copyright">
+    
+      © Copyright 2025, Alex Benitez.
+      <br/>
+    
+  </p>
 
-</footer>
-        </div>
-      </div>
-    </section>
   </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
 
-</body>
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
 </html>

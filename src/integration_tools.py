@@ -10,7 +10,7 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     
     '''
-
+    t = t - t[0] +0.00001
     Et = np.squeeze(Et_data)
     weights = lconfig.weights
     if at is None: at = np.ones_like(t)
@@ -61,9 +61,10 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     pst = (bigBt - temptBt)/np.c_[t[:ws]]
     pst[0] = At
     correction = np.r_[:pst.shape[1]]+1 > np.c_[:pst.shape[0]]
+    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/pst.npy',pst)
     pst = pst*correction
     
-    # Section above is 4 times faster than with for loops: (0.46973681449890137/0.10493278503417969)
+
     
     argdstar = pst - bigAt
     argdstar = argdstar*correction
@@ -75,7 +76,6 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     dnorm = dnorm*correction
     dstar = dstar*correction
     
-    # Section above is two orders of magnitude faster: (7.2791759967803955/0.1377711296081543)
     
     SQR = np.square
     integral = np.zeros((ws,N))
@@ -98,24 +98,14 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     temptat = bigat[np.c_[:bigat.shape[0]], (np.r_[:bigat.shape[1]] - np.c_[:ws]) % bigat.shape[1]]
     
     integral = dstar*dnorm*np.exp(-1j*Sst)*temptEt*(np.c_[weights])*(np.c_[c])*(bigat)*temptat
-    # for tau in range(ws):
-    #     integral[tau] = dstar[tau]*dnorm[tau]*np.roll(Et,tau)*(c[tau])*np.exp(-1j*Sst)*weights[tau]*at*np.roll(at,tau)
-       
-        # integral[tau-1] = dstar[tau-1]*dnorm[tau-1]*(np.exp(-1j*Sst[tau-1]))
-        # integral[tau-1] = integral[tau-1]*np.roll(Et,tau)*weights[tau]*at*np.roll(at,tau)*(c[tau])
+
     
     timeinterval  = np.array([np.ones(N)*(t[i] - t[i-1]) for i in range(ws)])
 
-
-
-
-    # for tau in range(2,ws):
-    #     output[tau:] += ((integral[tau-2])[tau:]+ (integral[tau-1])[tau:])*(t[tau-1]-t[tau-2]) 
     integral = integral*timeinterval
-    
-    # integral = integral*error
-    output = 2*np.imag(np.cumsum(integral,0)[-1])
 
+    output = 2*np.imag(np.cumsum(integral,0)[-1])
+    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy',output)
     return output
 
 

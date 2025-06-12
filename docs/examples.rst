@@ -1,13 +1,16 @@
 Examples
 ========
+This is a suite of examples to give you an idea of how the code works; all of the code here can be found in the /examples directory.
 
-Example pulse type
+1D Single Atom Response
+-----------------------
+The first step when using SNAIL is always to define the config, this stores all of the information about your laser and target and allows the user to only define essential variables. 
+.. code-block:: python
 
-.. tabs:
+ 	pulse = generate_pulse("gaussian")
 
-	.. tab:: 1D Single Atom Single Field
-	
-		This is an example of the most basic usage for SNAIL, the response of an atom under a single linearly polarized field in 1D. The first step will be to call the config class, this contains all of the variables that the code uses.
-	
-	.. tab:: 3D Multi Colour Field
-		This provides an example for a 3D colour field
+Cosine-Squared
+
+.. code-block:: python
+
+ 	pulse = generate_pulse("cos_sqr")

@@ -4,14 +4,6 @@ from numpy import pi, sqrt, cos, sin, log
 from multiprocessing import cpu_count,Pool
 from multiprocessing import shared_memory
 
-'''
-
-The current operational plans are:
-    1. Identify the number of available CPU cores and the amount of RAM
-    2. Split up the calculations into neat little chunks to increase parallelization capabilities
-    To do this I have to take the available cores and be like: Ok you get the first 1/4 of the tau integrals etc etc.
-
-'''
 
 def barebones_lewenstein(weights,start,N,lconfig,at=None,epsilon_t=1e-4):
     wp = weights.size
@@ -26,64 +18,70 @@ def barebones_lewenstein(weights,start,N,lconfig,at=None,epsilon_t=1e-4):
     # Et,At,Bt,Ct,t = np.ndarray((5,), dtype=np.float64, buffer=existing_shm.buf)
     Et,At,Bt,Ct,t = np.ndarray((5,N), dtype=np.float64, buffer=existing_shm.buf)
     if at is None: at = np.ones_like(t)
-    
-    
-    c = (pi/(epsilon_t + 0.5*1j*t[start:end]))**1.5
-
-    # print('That took {}'.format(time.time()-start))
-    
-    pst = np.array([(-np.roll(Bt,i)+Bt)/t[i] for i in range(start+1,end)])
-    error = np.ones(pst.shape)
-    error_complex = np.ones(pst.shape,dtype='complex')
-    for pos,val in enumerate(numerators):
-        error[pos,:(val+1)] = 0 
-        error_complex[pos,:(val+1)] = 0 + 0j 
-        
-    pst = pst*error
-
-
-    
-    # print(pst[np.where(pst!=0)])
     alpha = lconfig.alpha
-    prefactor = (2**3.5) * (alpha**1.25) / pi 
-    #d(p) = i * 2^3.5*alpha^1.25/pi * p/(p^2 + alpha)^3
+    prefactor = (2**3.5) * (alpha**1.25) / np.pi 
     def dp(p):
         return 1j*prefactor*p/((np.square(p) + alpha)**3)
-    print(wp)
-    argdstar = pst - np.reshape(np.tile(At,wp-1),(wp-1,At.size))
-    argdstar = argdstar*error
-    argdnorm = pst - np.array([(np.roll(At,i)) for i in range(start+1,end)])
-    argdnorm = argdnorm*(error)
+    
+    ws = weights.size
+    bigAt = np.reshape(np.tile(At,ws),(ws,At.size))
+    temptAt = bigAt[np.c_[:bigAt.shape[0]], (np.r_[:bigAt.shape[1]] - np.c_[start:ws+start]) % bigAt.shape[1]]
+
+    bigCt = np.reshape(np.tile(Ct,ws),(ws,Ct.size))
+    temptCt = bigCt[np.c_[:bigCt.shape[0]], (np.r_[:bigCt.shape[1]] - np.c_[start:ws+start]) % bigCt.shape[1]]
+    
+    c = (np.pi/(epsilon_t + 0.5*1j*t[start:ws+start]))**1.5
+    
+    bigBt = Bt*np.c_[np.ones(ws)] # Alternate method of generating big matrix
+    temptBt = bigBt[np.c_[:bigBt.shape[0]], (np.r_[:bigBt.shape[1]] - np.c_[start:ws+start]) % bigBt.shape[1]]
+    pst = (bigBt - temptBt)/np.c_[t[start:ws+start]]
+    if start == 0:
+        pst[0] = At
+    correction = np.r_[:pst.shape[1]]+1 > np.c_[:pst.shape[0]]+start
+    
+    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/pst{}.npy'.format(start),pst)
+    pst = pst*correction
+    
+    
+    argdstar = pst - bigAt
+    argdstar = argdstar*correction
+    argdnorm = pst - temptAt
+    argdnorm = argdnorm*(correction)
 
     dstar = np.conjugate(dp(argdstar))
     dnorm = dp(argdnorm)
-    dnorm = dnorm*error_complex
-    dstar = dstar*error_complex
+    dnorm = dnorm*correction
+    dstar = dstar*correction
 
-    SQR = np.square
-    try:
-        Sst = np.zeros((wp-1,N),dtype='complex')
-    except:
-        print('Ran into memory issues, oops! Going to try something different now')
-    integral = np.zeros((wp-1,N))
-    dt = np.diff(t)
-    temptBt = np.array([(np.roll(Bt,i)) for i in range(start+1,end)])
-    temptCt = np.array([(np.roll(Ct,i)) for i in range(start+1,end)])
-    Sst = -(0.5/np.array([t[start+1:end]]).T)*SQR(np.reshape(np.tile(Bt,wp-1),(wp-1,Bt.size))-temptBt) + 0.5*(np.reshape(np.tile(Ct,wp-1),(wp-1,Ct.size))-temptCt) + Ip*np.array([t[start+1:end]]).T
     
+    SQR = np.square
+    integral = np.zeros((ws,N))
+    dt = np.diff(t)
+
+    Sst = -(0.5/np.c_[t[start:start+ws]])*SQR(bigBt - temptBt) + 0.5*(bigCt-temptCt) + Ip*np.c_[t[start:start+ws]]
+    
+    Sst[0] = Sst[0]*(1-start==0)
+    
+    del bigBt
     del temptBt
     del temptCt
 
 
-    Sst = Sst*error_complex
-
-    for tau,val in enumerate(numerators[:-1]):
-        
-        tau = tau+1
-        integral[tau-1,:] = dstar[tau-1]*dnorm[tau-1]*np.roll(Et,tau)*(c[tau])*(np.cos(Sst[tau-1,:]) - 1j*np.sin(Sst[tau-1,:]))*weights[tau]*at*np.roll(at,tau)
-       
+    Sst = Sst*correction
+    bigEt = np.reshape(np.tile(Et,ws),(ws,Et.size))
+    temptEt = bigEt[np.c_[:bigEt.shape[0]], (np.r_[:bigEt.shape[1]] - np.c_[:ws]) % bigEt.shape[1]]
     
-    timeinterval  = np.array([np.ones(N)*(t[i] - t[i-1]) for i in range(start+1,end)])
+    bigat = np.reshape(np.tile(at,ws),(ws,at.size))
+    temptat = bigat[np.c_[:bigat.shape[0]], (np.r_[:bigat.shape[1]] - np.c_[:ws]) % bigat.shape[1]]
+    
+    integral = dstar*dnorm*np.exp(-1j*Sst)*temptEt*(np.c_[weights])*(np.c_[c])*(bigat)*temptat
+    # for tau in range(ws):
+    #     integral[tau] = dstar[tau]*dnorm[tau]*np.roll(Et,tau)*(c[tau])*np.exp(-1j*Sst)*weights[tau]*at*np.roll(at,tau)
+       
+        # integral[tau-1] = dstar[tau-1]*dnorm[tau-1]*(np.exp(-1j*Sst[tau-1]))
+        # integral[tau-1] = integral[tau-1]*np.roll(Et,tau)*weights[tau]*at*np.roll(at,tau)*(c[tau])
+    
+    timeinterval  = np.array([np.ones(N)*(t[i] - t[i-1]) for i in range(ws)])
 
 
 
@@ -121,19 +119,20 @@ def parallel_lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     except:
         pass
     # start = time.time()
-    Et = Et_data
-    # Here lies 30h of my time debugging, always remember to check for redundant dimensions!
+
+    Et = np.squeeze(Et_data)
+    t = t-t[0] +0.000001
+
+
     weights = lconfig.weights
     
     Ip = lconfig.Ip
 
-    # epsilon_t = lconfig.epsilon_t
-    alpha = lconfig.alpha
     
     N = Et_data.size
     ws = weights.size
     
-    split = int(ws/cores)
+    split = round(ws/cores) # Evenly split the tasks amongs the cores
     
     # print('That took {}'.format(time.time()-start))
 
@@ -145,23 +144,19 @@ def parallel_lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     At = -(np.roll(Et,1) + Et)*dt 
     
-    At = At[0]
-
+    At = np.squeeze(At)
     At[0] = 0
     At = np.cumsum(At)
 
 
     Bt = (np.roll(At,1) + At)*dt
-
     Bt[0] = 0
     Bt = np.cumsum(Bt)
 
     Ct = (np.square(np.roll(At,1)) + np.square(At))*dt
-
     Ct[0] = 0
-    Ct = np.cumsum(Ct) 
+    Ct = np.cumsum(Ct)
     
-    t = t-t[0]
 
     general = np.vstack((Et,At,Bt,Ct,t))
     
@@ -177,21 +172,25 @@ def parallel_lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     # print(b)
     info = [(weights[split*i:split*(i+1)],split*i,N,lconfig) for i in range(cores-1)]
     info.append((weights[split*(cores-1):],split*(cores-1),N,lconfig))
-    print('Here in')
+    print('Running on {} cores'.format(cores))
+    print(len(info))
     # Create a process pool
     with Pool(processes=cores) as pool:
-        print('In here')
+
         results = pool.starmap(barebones_lewenstein, info)
-        
+        print('Yipeee')
+
     results = np.vstack((results))
-    results = results[1:]
-    
-    results = np.cumsum(results,0)
+    print(results.shape)
+
+
+    results = 2*np.imag(np.cumsum(results,0)[-1])
+    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/parallel.npy',results)    
     shm.close()
     shm.unlink()
-    print(results[-1][20000:20100])
+
         
-    return results[-1]
+    return results
     # print('That took {}'.format(time.time()-start))
     
     # Now the meat and bones, am I Linus Torvalds, or just some schmuck
