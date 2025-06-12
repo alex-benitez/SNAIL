@@ -176,4 +176,4 @@ AnneData
 src/stored_arrays/
 *.npy
 *.m
-./images
+/images
