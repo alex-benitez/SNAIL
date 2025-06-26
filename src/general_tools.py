@@ -88,6 +88,7 @@ def generate_pulse(config):
     Returns:
         driving_field (array): The electric field amplitude over time, same size as t
     '''
+    
     t = generate_t(config)
     pult = sau_convert(config.pulse_duration*1e-15, 't', 'sau', config)
 
@@ -150,7 +151,7 @@ def generate_pulse(config):
     # coefficients = np.conj(np.fft.fft(np.conj(amplitude), axis=1))
     E0_SI = np.sqrt(2*config.peak_intensity*10000/299792458/8.854187817e-12)
     driving_field = amplitude*sau_convert(E0_SI, 'E', 'SAU', config)
-    return driving_field
+    return np.squeeze(driving_field)
 
 
 
@@ -163,19 +164,6 @@ def get_omega_axis(t, config):
     omega = temp*domega
     
     return omega
-
-
-
-def plane_wave_driving_field(x,y,z,config):
-    '''
-    Function leftover from when the field was stored as a fourier transform    
-    '''
-    
-    omega = config.omega
-    pulse_coefficients = config.pulse_coefficients
-    E0_SI = np.sqrt(2*config.peak_intensity*10000/299792458/8.854187817e-12)
-    E0 = sau_convert(E0_SI, 'E', 'SAU', config)
-    return E0 * np.fft.ifft(np.conjugate(pulse_coefficients),  axis=1)
 
 
 
@@ -242,20 +230,15 @@ def dipole_response(points,driving_field,config):
     
     for point in points:
         xi,yi,zi = point
-        # Et_cmc = np.real(plane_wave_driving_field(xi,yi,zi,config))
-        d_t = lewenstein(t,driving_field,config)#*t_window
-        
-        
-        
-        # d_t[wstart:] = d_t[wstart:]*t_window 
+
+        d_t = lewenstein(t,driving_field,config)#*t_windowº
         d_t = d_t*wind
-        # d_t(:,win_start:win_end) = d_t(:,win_start:win_end) .* repmat(t_window,components,1);
+   
         
-        
-        d_omega = np.conj(np.fft.fft(d_t)) # Used to have the conjugate taken of it
+        d_omega = np.conj(np.fft.fft(d_t)) 
         d_omega = d_omega*np.exp(-1j*omega*t[0])*(t[1]-t[0])
         omega = omega[:d_omega.size]
-        # d_omega = d_omega*np.exp(-1j*omega*t[0])*dt
+
         
         
         

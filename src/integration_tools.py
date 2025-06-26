@@ -10,7 +10,7 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     
     '''
-    t = t - t[0] +0.00001
+    t = t - t[0] 
     Et = np.squeeze(Et_data)
     weights = lconfig.weights
     if at is None: at = np.ones_like(t)
@@ -56,14 +56,19 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     c = (np.pi/(epsilon_t + 0.5*1j*t[:ws]))**1.5
     
-    bigBt = Bt*np.c_[np.ones(ws)]
-    temptBt = bigBt[np.c_[:bigBt.shape[0]], (np.r_[:bigBt.shape[1]] - np.c_[:ws]) % bigBt.shape[1]]
-    pst = (bigBt - temptBt)/np.c_[t[:ws]]
-    pst[0] = At
-    correction = np.r_[:pst.shape[1]]+1 > np.c_[:pst.shape[0]]
-    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/pst.npy',pst)
-    pst = pst*correction
+    bigBt = Bt*np.c_[np.ones(ws-1)]
+
+    temptBt = bigBt[np.c_[:bigBt.shape[0]], (np.r_[:bigBt.shape[1]] - np.c_[1:ws]) % bigBt.shape[1]]
     
+    pst = (bigBt - temptBt)/np.c_[t[1:ws]]
+    pst = np.vstack((At,pst))
+        
+    
+    
+    correction = np.r_[:pst.shape[1]]+1 > np.c_[:pst.shape[0]]
+    
+    pst = pst*correction
+    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/Bt.npy',pst)
 
     
     argdstar = pst - bigAt

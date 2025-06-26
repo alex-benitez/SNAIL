@@ -177,3 +177,4 @@ src/stored_arrays/
 *.npy
 *.m
 /images
+/postercode
