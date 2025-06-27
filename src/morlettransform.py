@@ -16,7 +16,7 @@ def morlet(k,W,s):
     
     return pref*np.exp(-((W - xf*k)**2)/2)
 
-def wavelet_transform(signal, t=None, maxF=0.2, maxT=0.1, JN=300, W=7):
+def wavelet_transform(signal, t=None, maxF=0.13, maxT=0.01, JN=300, W=1):
     """
     Performs a continuous wavelet transform (CWT) using the Morlet wavelet.
     
@@ -32,9 +32,9 @@ def wavelet_transform(signal, t=None, maxF=0.2, maxT=0.1, JN=300, W=7):
     if t is None:
         t = 2*np.pi*np.linspace(0,60,signal.size)
         
-    t = t - t[0] +0.00001
+    # t = t - t[0] +0.00001
     
-    lambda0 = 800e-9  # Laser wavelength [m]
+    lambda0 = 1000e-9  # Laser wavelength [m]
     C = 3e8           # Speed of light [m/s]
     T0 = lambda0 / C
     omega0 = 2 * np.pi / T0
@@ -53,35 +53,40 @@ def wavelet_transform(signal, t=None, maxF=0.2, maxT=0.1, JN=300, W=7):
     wave = np.zeros((JN, N), dtype=np.complex128)
 
     fsig = np.fft.fft(signal)
-
+    print(fsig[np.where(fsig!=0)].size)
     for n in range(JN):
         j = n + js
         s[n] = s0 * 2**(j * dj)
         M = morlet(N, W, s[n])  # Assumes morlet returns frequency-domain filter
         Msig = M * fsig
+
         wave[n, :] = np.flip(np.fft.ifft(np.flip(Msig)))
           # matches MATLAB fliplr
 
     S = W / (2 * np.pi * s) * (1 / T)
     Snew = S / omega0
-
+    # 
     # Plotting
     plt.figure(figsize=(10, 6))
-    plt.imshow(np.log(np.abs(wave)**2), extent=[t[0]/1e-15, t[-1]/1e-15, Snew[-1], Snew[0]], 
+    plt.imshow(np.log(np.abs(wave)**2), extent=[t[0]/1e-15, t[-1]/1e-15, Snew[0], Snew[-1]], 
                aspect='auto', cmap='jet')
     clim = plt.gci().get_clim()
     plt.clim(clim[1] - 10, clim[1])
     plt.xlabel('Time [fs]', fontsize=24)
     plt.ylabel('Harmonic order', fontsize=24)
-    plt.gca().invert_yaxis()
+    # plt.gca().invert_yaxis()
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
     plt.gcf().set_facecolor('white')
     plt.tight_layout()
+    plt.savefig('/home/alex/Desktop/Python/SNAIL/images/gaborplot.png',dpi=300)
     plt.show()
+    # return wave, t, S
 
-    return wave, t, S
+response1 = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy')
+time = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/time.npy')
+time =  time - time[0]
+windowrange = [7000,8000]
 
-response1 = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/response.npy')
-wavelet_transform(response1)
+wavelet_transform(response1[windowrange[0]:windowrange[1]],time[windowrange[0]:windowrange[1]])
 

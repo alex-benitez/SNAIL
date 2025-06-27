@@ -25,11 +25,11 @@ valrang = [0,100]
 
 # results = np.zeros((10,4998))
 cutoff = []
-fig,axs = plt.subplots(1,1,figsize=(6,4))
+fig,axs = plt.subplots(1,1,figsize=(6,3))
 for i in range(7):
     config.ionization_potential = 12 + 0.3*i
     config.peak_intensity = 1e14 + 0.12e14*i
-    [driving_field] = general_tools.generate_pulse(config)
+    driving_field = general_tools.generate_pulse(config)
     [omega1,response1] = general_tools.dipole_response([[0,0,0]],driving_field,config)
 
     omega1 = omega1[np.where(omega1>valrang[0])]
@@ -62,7 +62,7 @@ plt.legend()
 
    
 axs.set_xlabel('Harmonic Order')
-axs.set_ylabel('Intensity (arbitary log scale)')
+# axs.set_ylabel('Intensity (arbitary log scale)')
 axs.set_title('Cutoff Law Demonstration With Simulated Data')
 plt.tight_layout() 
 plt.savefig('/home/alex/Desktop/Python/SNAIL/images/cutofflaw.png',dpi=300)

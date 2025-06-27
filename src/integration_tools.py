@@ -56,12 +56,13 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     c = (np.pi/(epsilon_t + 0.5*1j*t[:ws]))**1.5
     
-    bigBt = Bt*np.c_[np.ones(ws-1)]
+    bigBt = Bt*np.c_[np.ones(ws)]
 
-    temptBt = bigBt[np.c_[:bigBt.shape[0]], (np.r_[:bigBt.shape[1]] - np.c_[1:ws]) % bigBt.shape[1]]
+    temptBt = bigBt[np.c_[:bigBt.shape[0]], (np.r_[:bigBt.shape[1]] - np.c_[:ws]) % bigBt.shape[1]]
+
     
-    pst = (bigBt - temptBt)/np.c_[t[1:ws]]
-    pst = np.vstack((At,pst))
+    pst = (bigBt - temptBt)/np.c_[t[:ws]]
+    pst[0] = At
         
     
     
@@ -85,9 +86,9 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     SQR = np.square
     integral = np.zeros((ws,N))
     dt = np.diff(t)
-
+    t[0] = 1
     Sst = -(0.5/np.c_[t[:ws]])*SQR(bigBt - temptBt) + 0.5*(bigCt-temptCt) + Ip*np.c_[t[:ws]]
-    
+    t[0] = 0
     Sst[0] = Sst[0]*0
     
     del bigBt

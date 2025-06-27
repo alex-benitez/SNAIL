@@ -233,7 +233,7 @@ def dipole_response(points,driving_field,config):
 
         d_t = lewenstein(t,driving_field,config)#*t_windowº
         d_t = d_t*wind
-   
+        np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/time.npy',sau_convert(t,'t','si',config))
         
         d_omega = np.conj(np.fft.fft(d_t)) 
         d_omega = d_omega*np.exp(-1j*omega*t[0])*(t[1]-t[0])

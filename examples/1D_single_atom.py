@@ -32,12 +32,12 @@ sau =  general_tools.sau_convert
 '''
 
 
-config.calculation_cycles = 60
+config.calculation_cycles = 58
 config.ppcycle = 200
 config.wavelength = 1e-3
 config.peak_intensity = 1e14
-config.pulse_shape = 'cos_sqr'
-config.pulse_duration = 40 # In fs
+config.pulse_shape = 'sin_6'
+config.pulse_duration = 35 # In fs
 config.parallel = False
 
 
@@ -54,7 +54,7 @@ config.parallel = False
 
 config.ionization_potential = 12.13
 
-config.tau_window_length = 1# How far back over excursion time to integrate over, as a fraction of a cycle
+config.tau_window_length = 2# How far back over excursion time to integrate over, as a fraction of a cycle
 config.tau_dropoff_pts = 0.43 # Fraction of the integration window past which the integrands drop off to prevent artifacts
 
 # config.parallelize = True
@@ -62,7 +62,7 @@ xv,yv,zv = [np.array([0]) for i in range(3)]
 
 
 start = time.time()
-valrang = [0,80]
+valrang = [0,100]
 lawvals = []
 hbar = 1.05457181e-34/(1.6*1e-19)
 c = 3e8
@@ -96,12 +96,12 @@ start = time.time()
 
 # config.parallel = True
 
+np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/response.npy',response1)
 
 omega1 = omega1[np.where(omega1>valrang[0])]
 response1 = response1[np.where(omega1>valrang[0])]
 response1 = response1[np.where(omega1<valrang[1])]
 
-np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/response.npy',response1)
 response1 = np.log(np.abs(response1[np.where(omega1<valrang[1])])**2)
 output = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/output.npy')
 diff = abs(matlabarray[:-1]-output)
@@ -123,8 +123,8 @@ axs[1].set_xlabel('Harmonic Order')
 axs[1].set_ylabel('Intensity (Arbitrary log Scale)')
 
 # axs[0].vlines(int(cutoff),min(response1),max(response1),'k',linewidth=0.5)
-axs[0].grid(True)
-axs[1].grid(True)
+# axs[0].grid(True)
+# axs[1].grid(True)
 # axs[0].set_xlabel('High Harmonic Order')`
 t = general_tools.generate_t(config)
 t_fs = general_tools.sau_convert(t,'t','SI',config)/1e-15
