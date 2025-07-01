@@ -8,6 +8,8 @@ Wavelet transform for further analysis of SNAIL
 import numpy as np
 import matplotlib.pyplot as plt
 from math import erf
+from general_tools import sau_convert
+from general_tools import config
 
 def morlet(k,W,s):
     xf = 2*np.pi*s
@@ -16,7 +18,7 @@ def morlet(k,W,s):
     
     return pref*np.exp(-((W - xf*k)**2)/2)
 
-def wavelet_transform(signal, t=None, maxF=0.13, maxT=0.01, JN=300, W=1):
+def wavelet_transform(signal, t=None, maxF=0.5, maxT=0.01, JN=500, W=6):
     """
     Performs a continuous wavelet transform (CWT) using the Morlet wavelet.
     
@@ -57,7 +59,7 @@ def wavelet_transform(signal, t=None, maxF=0.13, maxT=0.01, JN=300, W=1):
     for n in range(JN):
         j = n + js
         s[n] = s0 * 2**(j * dj)
-        M = morlet(N, W, s[n])  # Assumes morlet returns frequency-domain filter
+        M = morlet(np.r_[0:N], W, s[n])  # Assumes morlet returns frequency-domain filter
         Msig = M * fsig
 
         wave[n, :] = np.flip(np.fft.ifft(np.flip(Msig)))
@@ -67,26 +69,38 @@ def wavelet_transform(signal, t=None, maxF=0.13, maxT=0.01, JN=300, W=1):
     Snew = S / omega0
     # 
     # Plotting
-    plt.figure(figsize=(10, 6))
-    plt.imshow(np.log(np.abs(wave)**2), extent=[t[0]/1e-15, t[-1]/1e-15, Snew[0], Snew[-1]], 
-               aspect='auto', cmap='jet')
-    clim = plt.gci().get_clim()
-    plt.clim(clim[1] - 10, clim[1])
-    plt.xlabel('Time [fs]', fontsize=24)
-    plt.ylabel('Harmonic order', fontsize=24)
-    # plt.gca().invert_yaxis()
-    plt.xticks(fontsize=16)
-    plt.yticks(fontsize=16)
+    plt.figure(figsize=(6, 4))
+    
+    plt.imshow(np.log(np.abs(wave)**2), extent=[t[0], t[-1], S[-1], S[0]],
+               aspect='auto', cmap='hsv')
+    # clim = plt.gci().get_clim()
+    # plt.clim(clim[1] - 10, clim[1])
+    plt.xlabel('Time [fs]', fontsize=12)
+    plt.ylabel('Harmonic order', fontsize=12)
+    # plt.xlim(-25,25)
+    plt.ylim(0,32)
+    plt.xlim(-20,20)
+    
+    
+    field = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/driving.npy')
+    xvals = t[np.where(np.abs(t)<25)]
+    yvals =  2.5*field[np.where(np.abs(t)<25)]/max(field[np.where(np.abs(t)<25)])+13
+    # plt.plot(xvals,yvals,'k--')
+    plt.gca().invert_yaxis()
+    plt.xticks(fontsize=10)
+    plt.yticks(fontsize=10)
     plt.gcf().set_facecolor('white')
     plt.tight_layout()
+    plt.colorbar()
+    
+    
     plt.savefig('/home/alex/Desktop/Python/SNAIL/images/gaborplot.png',dpi=300)
     plt.show()
     # return wave, t, S
 
-response1 = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy')
-time = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/time.npy')
-time =  time - time[0]
-windowrange = [7000,8000]
-
-wavelet_transform(response1[windowrange[0]:windowrange[1]],time[windowrange[0]:windowrange[1]])
+# response1 = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy')
+# time = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/time.npy')
+response1 = np.loadtxt('/home/alex/Desktop/Python/SNAIL/dt3.dat')
+time = np.loadtxt('/home/alex/Desktop/Python/SNAIL/time3.dat')
+wavelet_transform(response1,time)
 

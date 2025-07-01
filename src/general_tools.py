@@ -139,7 +139,7 @@ def generate_pulse(config):
     else:
         raise ValueError("Invalid carrier: must be 'cos' or 'exp'")
     # print(envelope)
-    amplitude = np.array([envelope*carrier(t)])
+    amplitude = envelope*carrier(t)
 
     # Setup frequency axis
     # domega = 2 * np.pi / (t[1] - t[0]) / len(t)
@@ -167,9 +167,10 @@ def get_omega_axis(t, config):
 
 
 
-def dipole_response(points,driving_field,config):
-    t = generate_t(config)
-    dt = abs(t[1] - t[0])
+def dipole_response(points,driving_field,config,t=np.array([])):
+    if t.size == 0:
+        t = generate_t(config)
+        print(t)
     pi = np.pi
     
     '''
@@ -230,11 +231,15 @@ def dipole_response(points,driving_field,config):
     
     for point in points:
         xi,yi,zi = point
-
-        d_t = lewenstein(t,driving_field,config)#*t_windowº
-        d_t = d_t*wind
-        np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/time.npy',sau_convert(t,'t','si',config))
+        d_t = lewenstein(t,driving_field,config)#*t_window
+        np.save('/home/alex/Desktop/Python/SNAIL/Benflattop/responsestore/response.npy',d_t)
+        np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy',d_t)
+        np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/time.npy',t)
         
+        d_t = d_t*wind
+
+        
+
         d_omega = np.conj(np.fft.fft(d_t)) 
         d_omega = d_omega*np.exp(-1j*omega*t[0])*(t[1]-t[0])
         omega = omega[:d_omega.size]

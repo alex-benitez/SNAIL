@@ -65,6 +65,14 @@ axs.set_xlabel('Harmonic Order')
 # axs.set_ylabel('Intensity (arbitary log scale)')
 axs.set_title('Cutoff Law Demonstration With Simulated Data')
 plt.tight_layout() 
+plt.grid()
+plt.tick_params(
+    axis='y',          # changes apply to the x-axis
+    which='both',      # both major and minor ticks are affected
+    left=False,      # ticks along the bottom edge are off
+    right=False,         # ticks along the top edge are off
+    labelleft=False)
+
 plt.savefig('/home/alex/Desktop/Python/SNAIL/images/cutofflaw.png',dpi=300)
 plt.show()
 

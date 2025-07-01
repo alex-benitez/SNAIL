@@ -11,6 +11,7 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     '''
     t = t - t[0] 
+
     Et = np.squeeze(Et_data)
     weights = lconfig.weights
     if at is None: at = np.ones_like(t)
