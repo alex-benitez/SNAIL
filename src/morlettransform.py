@@ -8,7 +8,7 @@ Wavelet transform for further analysis of SNAIL
 import numpy as np
 import matplotlib.pyplot as plt
 from math import erf
-from general_tools import sau_convert
+from general_tools import au_convert
 from general_tools import config
 
 def morlet(k,W,s):

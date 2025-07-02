@@ -15,20 +15,20 @@ def generate_t(config):
     """
     A function to generate the time axis in femtoseconds given the specific pulse information.
     """
-    
-    return 2*np.pi*np.arange(-config.calculation_cycles/2,config.calculation_cycles/2,1/config.ppcycle) 
+    l = config.pulse_duration*(1+2*config.padding)
+    return np.arange(-l/2,l/2,step=config.timestep) 
     
 
-def sau_convert(value,quantity,target,config):
+def au_convert(value,quantity,target):
     """
-    Converts between standard SI units and atomic units, currently supports:
-        e - Electric field   u - Energy   s - Length   a - Area   vol - Volume   v - velocity
+    Converts between standard SI units and atomic units or time to femtoseconds, currently supports:
+        e - Electric field   i - intensity   t - time   u - Energy   s - Length   a - Area   
+        vol - Volume   v - velocity
     
     Args:
         value (float): The quantity to convert.
         quantity: The physical parameter that is being converted, e.g. e for electric field.
-        target (string): 'si' to convert to standard units and 'sau' to convert to scaled atomic units.
-        config (class): The config containing at least the wavelength
+        target (string): 'si' to convert to standard units, 'au' to convert to atomic units, 'fs' to convert au time to fs time (only works with time).
         
     Returns:
         
@@ -40,18 +40,17 @@ def sau_convert(value,quantity,target,config):
     eq = 1.602176565e-19 # electron charge
     a0 = 5.2917721092e-11 # Bohr radius
     Ry = 13.60569253*eq # Rydberg unit of energy
-    
-    # scaled atomic unit quantities expressed in SI units
-    t_unit_SI = (config.wavelength*1e-3) / c / (2*np.pi);
+    t_unit_SI = 2.418884326509e-17
+    I_unit_SI = 6436409342744339
+
     omega_unit_SI = 1/t_unit_SI
-    
     U_unit_SI = hbar * omega_unit_SI 
     q_unit_SI = eq
     s_unit_SI = a0 * np.sqrt(2*Ry/U_unit_SI)
     	
     E_unit_SI = U_unit_SI / q_unit_SI / s_unit_SI
     
-    factors = {'e':E_unit_SI,'u':U_unit_SI,'s':s_unit_SI,'a':s_unit_SI**2,'vol':s_unit_SI**3,'t':t_unit_SI,'v':s_unit_SI/t_unit_SI}
+    factors = {'e':E_unit_SI,'i':I_unit_SI,'u':U_unit_SI,'s':s_unit_SI,'a':s_unit_SI**2,'vol':s_unit_SI**3,'t':t_unit_SI,'v':s_unit_SI/t_unit_SI}
 
     	
 
@@ -61,8 +60,14 @@ def sau_convert(value,quantity,target,config):
     if target == 'si':
         return value*factors[quantity]
     
-    elif target == 'sau':
+    elif target == 'au':
         return value/factors[quantity]
+    
+    elif target == 'fs':
+        if quantity != 't':
+            raise ValueError("Can only convert time to fs")
+        else:
+            return value * 0.02418884 
     
     else:
         raise ValueError("Invalid quantity or target")
@@ -73,10 +78,11 @@ def generate_pulse(config):
     Generates the driving pulse, forces the user to set a pulse type,
     currently supports pulse types:
         
-        Constant - A constant envelope 
-        Gaussian - Gaussian beam with no cutoff
+        Constant       - A constant envelope 
+        Gaussian       - Gaussian beam with no cutoff
         Super Gaussian - Gaussian with a faster decline
-        Cos Squared - Cos squared envelope
+        Cos Squared    - Cos squared envelope
+        Sin 6          - A very top flat sin 6 pulse for sharper harmonics 
     
     Args:
         config (class):
@@ -90,11 +96,12 @@ def generate_pulse(config):
     '''
     
     t = generate_t(config)
-    pult = sau_convert(config.pulse_duration*1e-15, 't', 'sau', config)
+    # pult = au_convert(config.pulse_duration*1e-15, 't', 'au')
+    pult = config.pulse_duration
 
     
 
-    pulse_list = ['constant','gaussian','super_gaussian','cos_sqr','sin_sqr','sin_6']
+    pulse_list = ['constant','gaussian','super_gaussian','cos_sqr','sin_6']
     
     if not hasattr(config,'pulse_shape') or (config.pulse_shape.lower() not in pulse_list):
         raise ValueError('You must specify a pulse shape from the following: {}'.format(pulse_list))
@@ -116,12 +123,6 @@ def generate_pulse(config):
         envelope[t / tau <= -np.pi / 2] = 0
         envelope[t / tau >= np.pi / 2] = 0
         
-    elif config.pulse_shape.lower() == 'sin_sqr': 
-        tau = pult / 2 / np.arccos(1 / np.sqrt(np.sqrt(2)))
-        envelope = 1-np.cos(np.pi/2 +0.5*t / tau) ** 6
-        envelope[t / tau <= -np.pi ] = 0
-        envelope[t / tau >= np.pi ] = 0
-        
     elif config.pulse_shape.lower() == 'sin_6': 
         t = t - t[0] + 0.0001
         tau = pult / 2 / np.arccos(1 / np.sqrt(np.sqrt(2)))
@@ -139,7 +140,7 @@ def generate_pulse(config):
     else:
         raise ValueError("Invalid carrier: must be 'cos' or 'exp'")
     # print(envelope)
-    amplitude = envelope*carrier(t)
+    amplitude = envelope*carrier(t*2*137*np.pi/config.wavelength)
 
     # Setup frequency axis
     # domega = 2 * np.pi / (t[1] - t[0]) / len(t)
@@ -149,8 +150,8 @@ def generate_pulse(config):
     
     # Fourier transform
     # coefficients = np.conj(np.fft.fft(np.conj(amplitude), axis=1))
-    E0_SI = np.sqrt(2*config.peak_intensity*10000/299792458/8.854187817e-12)
-    driving_field = amplitude*sau_convert(E0_SI, 'E', 'SAU', config)
+    E0_SI = np.sqrt(config.peak_intensity)
+    driving_field = amplitude*au_convert(E0_SI, 'E', 'au')
     return np.squeeze(driving_field)
 
 
@@ -207,7 +208,7 @@ def dipole_response(points,driving_field,config,t=np.array([])):
     weights[tau_window_pts:] = weights[tau_window_pts:] * dropoff
     
     config.weights = weights
-    Ip = sau_convert(config.ionization_potential*1.602176565e-19, 'u', 'sau', config)
+    Ip = au_convert(config.ionization_potential*1.602176565e-19, 'u', 'au', config)
     config.Ip = Ip
     config.alpha = 2*Ip
     
@@ -231,7 +232,7 @@ def dipole_response(points,driving_field,config,t=np.array([])):
     
     for point in points:
         xi,yi,zi = point
-        # t = sau_convert(t,'t','SI',config)
+        # t = au_convert(t,'t','SI',config)
         d_t = lewenstein(t,driving_field,config)#*t_window
         np.save('/home/alex/Desktop/Python/SNAIL/Benflattop/responsestore/response.npy',d_t)
         np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy',d_t)

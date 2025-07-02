@@ -44,10 +44,6 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     Ct = (np.square(np.roll(At,1)) + np.square(At))*dt
     Ct[0] = 0
     Ct = np.cumsum(Ct)
-    
-    # c**1.5 is 10x faster than c*np.sqrt(c)
-    # Section above is 2 orders of magnitude faster than using for loops (0.04641/0.00031)
-
     ws = weights.size
     bigAt = np.reshape(np.tile(At,ws),(ws,At.size))
     temptAt = bigAt[np.c_[:bigAt.shape[0]], (np.r_[:bigAt.shape[1]] - np.c_[:ws]) % bigAt.shape[1]]
@@ -70,8 +66,6 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     correction = np.r_[:pst.shape[1]]+1 > np.c_[:pst.shape[0]]
     
     pst = pst*correction
-    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/Bt.npy',pst)
-
     
     argdstar = pst - bigAt
     argdstar = argdstar*correction

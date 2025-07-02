@@ -8,7 +8,7 @@ from scipy.io import loadmat
 
 firststart = time.time()
 config = general_tools.config()
-sau =  general_tools.sau_convert
+au =  general_tools.au_convert
 
 
 '''
@@ -64,7 +64,7 @@ def pwdf(omega,lconfig):
     a = np.fft.ifft(np.conjugate(lconfig.pulse_coefficients),  axis=1)
     # pulse_coefficients = lconfig.pulse_coefficients
     E0_SI = np.sqrt(2*lconfig.peak_intensity*10000/299792458/8.854187817e-12)
-    E0 = sau(E0_SI, 'E', 'SAU', lconfig)
+    E0 = au(E0_SI, 'E', 'au', lconfig)
     return E0 * a
 
 valrang = [0,100]
