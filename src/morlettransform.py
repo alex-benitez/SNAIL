@@ -18,7 +18,7 @@ def morlet(k,W,s):
     
     return pref*np.exp(-((W - xf*k)**2)/2)
 
-def wavelet_transform(signal, t=None, maxF=0.5, maxT=0.01, JN=500, W=6):
+def wavelet_transform(signal, t=None, maxF=0.5, maxT=0.01,lambda0=1000, JN=500, W=6):
     """
     Performs a continuous wavelet transform (CWT) using the Morlet wavelet.
     
@@ -36,7 +36,7 @@ def wavelet_transform(signal, t=None, maxF=0.5, maxT=0.01, JN=500, W=6):
         
     # t = t - t[0] +0.00001
     
-    lambda0 = 1000e-9  # Laser wavelength [m]
+    lambda0 = lambda0*1e-9  # Laser wavelength [m]
     C = 3e8           # Speed of light [m/s]
     T0 = lambda0 / C
     omega0 = 2 * np.pi / T0
@@ -85,7 +85,7 @@ def wavelet_transform(signal, t=None, maxF=0.5, maxT=0.01, JN=500, W=6):
     field = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/driving.npy')
     xvals = t[np.where(np.abs(t)<25)]
     yvals =  2.5*field[np.where(np.abs(t)<25)]/max(field[np.where(np.abs(t)<25)])+13
-    # plt.plot(xvals,yvals,'k--')
+    plt.plot(xvals,yvals,'k--')
     plt.gca().invert_yaxis()
     plt.xticks(fontsize=10)
     plt.yticks(fontsize=10)
@@ -100,7 +100,7 @@ def wavelet_transform(signal, t=None, maxF=0.5, maxT=0.01, JN=500, W=6):
 
 # response1 = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy')
 # time = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/time.npy')
-response1 = np.loadtxt('/home/alex/Desktop/Python/SNAIL/dt3.dat')
-time = np.loadtxt('/home/alex/Desktop/Python/SNAIL/time3.dat')
+response1 = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy')
+time = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/time.npy')
 wavelet_transform(response1,time)
 
