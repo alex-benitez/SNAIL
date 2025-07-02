@@ -15,13 +15,14 @@ import general_tools as gt
 Tilaser = gt.config
 Tilaser.calculation_cycles = 60
 Tilaser.ppcycle = 200
+Tilaser.padding = 10
 Tilaser.wavelength = 0.8e-3
 Tilaser.peak_intensity = 1e14
 Tilaser.pulse_shape = 'gaussian'
 Tilaser.pulse_duration = 35 # In fs
 Tilaser.ionization_potential = 12.13
-Tilaser.tau_window_length = 1
-Tilaser.tau_dropoff_pts = 0.4 
+Tilaser.tau_window_length = 1.5
+Tilaser.tau_dropoff_pts = 0.3
 
 field = gt.generate_pulse(Tilaser)
 t = gt.generate_t(Tilaser)
