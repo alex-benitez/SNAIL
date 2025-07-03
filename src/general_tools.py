@@ -19,11 +19,21 @@ def generate_t(config):
     return np.arange(-l/2,l/2,step=config.timestep) 
     
 
+def get_omega_axis(t, config):
+    dt = t[1] - t[0]
+    domega = 2*np.pi/dt/len(t)
+    temp = np.arange(0,len(t))
+    temp[int(len(temp)/2)-1:] = temp[int(len(temp)/2)-1:] - len(temp)
+    omega = temp*domega
+    
+    return omega
+
+
 def au_convert(value,quantity,target):
     """
     Converts between standard SI units and atomic units or time to femtoseconds, currently supports:
-        e - Electric field   i - intensity   t - time   u - Energy   s - Length   a - Area   
-        vol - Volume   v - velocity
+        e - Electric field   i - intensity (W/cm^2)  u - Energy   s - Length   a - Area   
+        vol - Volume   t - time   v - velocity
     
     Args:
         value (float): The quantity to convert.
@@ -41,7 +51,7 @@ def au_convert(value,quantity,target):
     a0 = 5.2917721092e-11 # Bohr radius
     Ry = 13.60569253*eq # Rydberg unit of energy
     t_unit_SI = 2.418884326509e-17
-    I_unit_SI = 6436409342744339
+    e0 = 8.8541878188e-12
 
     omega_unit_SI = 1/t_unit_SI
     U_unit_SI = hbar * omega_unit_SI 
@@ -49,11 +59,11 @@ def au_convert(value,quantity,target):
     s_unit_SI = a0 * np.sqrt(2*Ry/U_unit_SI)
     	
     E_unit_SI = U_unit_SI / q_unit_SI / s_unit_SI
+    I_unit_SI = 0.5*c*e0*E_unit_SI**2
     
     factors = {'e':E_unit_SI,'i':I_unit_SI,'u':U_unit_SI,'s':s_unit_SI,'a':s_unit_SI**2,'vol':s_unit_SI**3,'t':t_unit_SI,'v':s_unit_SI/t_unit_SI}
 
     	
-
     target = target.lower()
     quantity = quantity.lower()
     
@@ -78,11 +88,11 @@ def generate_pulse(config):
     Generates the driving pulse, forces the user to set a pulse type,
     currently supports pulse types:
         
-        Constant       - A constant envelope 
-        Gaussian       - Gaussian beam with no cutoff
-        Super Gaussian - Gaussian with a faster decline
-        Cos Squared    - Cos squared envelope
-        Sin 6          - A very top flat sin 6 pulse for sharper harmonics 
+        Constant       - A constant envelope\n
+        Gaussian       - Gaussian beam with no cutoff\n
+        Super Gaussian - Gaussian with a faster decline\n
+        Cos Squared    - Cos squared envelope\n
+        Sin 6          - A very flat sin 6 pulse for sharper harmonics\n 
     
     Args:
         config (class):
@@ -124,7 +134,7 @@ def generate_pulse(config):
         envelope[t / tau >= np.pi / 2] = 0
         
     elif config.pulse_shape.lower() == 'sin_6': 
-        t = t - t[0] + 0.0001
+        t = t - t[0] 
         tau = pult / 2 / np.arccos(1 / np.sqrt(np.sqrt(2)))
         envelope = 1-np.sin(np.pi/2 +0.5*t / tau) ** 6
         # envelope[np.pi/2 +0.5*t / tau <= 0 ] = 0
@@ -141,45 +151,24 @@ def generate_pulse(config):
         raise ValueError("Invalid carrier: must be 'cos' or 'exp'")
     # print(envelope)
     amplitude = envelope*carrier(t*2*137*np.pi/config.wavelength)
-
-    # Setup frequency axis
-    # domega = 2 * np.pi / (t[1] - t[0]) / len(t)
-    # temp = np.arange(len(t))
-    # temp[temp >= np.ceil(len(temp) / 2)] -= len(temp)
-    # omega = temp * domega
-    
-    # Fourier transform
-    # coefficients = np.conj(np.fft.fft(np.conj(amplitude), axis=1))
-    E0_SI = np.sqrt(config.peak_intensity)
-    driving_field = amplitude*au_convert(E0_SI, 'E', 'au')
+    print(au_convert(config.peak_intensity, 'i', 'au'))
+    E0 = np.sqrt(config.peak_intensity)
+    print(E0)
+    driving_field = amplitude*E0
     return np.squeeze(driving_field)
-
-
-
-def get_omega_axis(t, config):
-
-    dt = t[1] - t[0]
-    domega = 2*np.pi/dt/len(t)
-    temp = np.arange(0,len(t))
-    temp[int(len(temp)/2)-1:] = temp[int(len(temp)/2)-1:] - len(temp)
-    omega = temp*domega
-    
-    return omega
-
 
 
 def dipole_response(points,driving_field,config,t=np.array([])):
     if t.size == 0:
         t = generate_t(config)
-        print(t)
+        # print(t)
     pi = np.pi
     
     '''
     To avoid integration artifacts, a soft integration window is applied through
     the weights which multiply each integrand later, how it works is the weights
     are equal to 1 [0 -> tau_window_pts] and then drop off as cos^2
-    
-    The input field for this function must be fourier transformed, alongside the corresponding frequency axis
+
     '''
     if not hasattr(config, 'tau_window_length'):
         config.tau_window_length = 1
@@ -208,7 +197,7 @@ def dipole_response(points,driving_field,config,t=np.array([])):
     weights[tau_window_pts:] = weights[tau_window_pts:] * dropoff
     
     config.weights = weights
-    Ip = au_convert(config.ionization_potential*1.602176565e-19, 'u', 'au', config)
+    Ip = au_convert(config.ionization_potential*1.602176565e-19, 'u', 'au')
     config.Ip = Ip
     config.alpha = 2*Ip
     
