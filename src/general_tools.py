@@ -13,7 +13,7 @@ class config:
 
 def generate_t(config):
     """
-    A function to generate the time axis in femtoseconds given the specific pulse information.
+    A function to generate the time axis in SAU, using the number of cycles 
     """
     
     return 2*np.pi*np.arange(-config.calculation_cycles/2,config.calculation_cycles/2,1/config.ppcycle) 
@@ -231,7 +231,6 @@ def dipole_response(points,driving_field,config,t=np.array([])):
     
     for point in points:
         xi,yi,zi = point
-        # t = sau_convert(t,'t','SI',config)
         d_t = lewenstein(t,driving_field,config)#*t_window
         np.save('/home/alex/Desktop/Python/SNAIL/Benflattop/responsestore/response.npy',d_t)
         np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy',d_t)

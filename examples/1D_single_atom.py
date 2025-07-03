@@ -32,13 +32,11 @@ sau =  general_tools.sau_convert
 '''
 
 
-config.calculation_cycles = 46
-config.pulses = 1
-config.padding = 10 # In fs
-config.ppcycle = 100
+config.calculation_cycles = 12
+config.ppcycle = 800
 config.wavelength = 1e-3
 config.peak_intensity = 1e14
-config.pulse_shape = 'sin_6'
+config.pulse_shape = 'gaussian'
 config.pulse_duration = 14# In fs
 config.parallel = False
 
@@ -125,7 +123,7 @@ print('That took {} seconds'.format(time.time()-firststart))
 fig,axs = plt.subplots(1,2,figsize=(8,3))
 
 # axs[0].plot(omega1,response1)
-axs[1].plot(omega1[np.where(omega1<valrang[1])],response1)
+# axs[1].plot(omega1[np.where(omega1<valrang[1])],response1)
 response = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy')
 
 axs[1].set_title('Harmonic Response')
@@ -140,7 +138,7 @@ axs[0].set_title('Laser Pulse')
 # axs[0].set_xlabel('High Harmonic Order')`
 t = general_tools.generate_t(config)
 t_fs = general_tools.sau_convert(t,'t','SI',config)/1e-15
-# axs[1].plot(t,response)^
+axs[1].plot(t,response)
 np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/zakariatime.npy',t_fs)
 axs[0].plot(t_fs,driving_field,'r-')
 axs[0].set_xlabel('Time(fs)')
