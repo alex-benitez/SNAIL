@@ -17,7 +17,7 @@ from scipy.io import loadmat
 
 firststart = time.time()
 config = general_tools.config()
-au =  general_tools.au_convert
+sau =  general_tools.sau_convert
 
 
 '''
@@ -32,14 +32,14 @@ au =  general_tools.au_convert
 '''
 
 
-config.calculation_cycles = 12
+config.calculation_cycles = 46
+config.pulses = 1
+config.padding = 10 # In fs
 config.ppcycle = 100
-config.wavelength = au(1e-6,'s','au') # In nanometers!!!
-config.peak_intensity = au(1e14,'i','au')
-config.pulse_shape = 'gaussian'
-config.pulse_duration = au(14e-15,'t','au')# In fs
-config.timestep = au(0.01e-15,'t','au') # In fs
-config.padding = 0.5 # As a multiple of pulse duration on either side
+config.wavelength = 1e-3
+config.peak_intensity = 1e14
+config.pulse_shape = 'sin_6'
+config.pulse_duration = 14# In fs
 config.parallel = False
 
 
@@ -92,7 +92,7 @@ matlabarray = [float(i) for i in matlabarray]
     
 
 driving_field = general_tools.generate_pulse(config)
-# print(max(driving_field))
+print(max(driving_field))
 # driving_field = np.load('/home/alex/Desktop/Python/SNAIL/Benflattop/theoreticalfield.npy')
 
 # config.pulse_shape = 'cos_sqr'
@@ -100,21 +100,21 @@ driving_field = general_tools.generate_pulse(config)
 
 # np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/driving.npy',driving_field)
 # print(driving_field)
-# start = time.time()
-# [omega1,response1] = general_tools.dipole_response([[0,0,0]],driving_field,config)
+start = time.time()
+[omega1,response1] = general_tools.dipole_response([[0,0,0]],driving_field,config)
 
 # config.parallel = True
 
-# np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/response.npy',response1)
-# np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/config.npy',config)
-# omega1 = omega1[np.where(omega1>valrang[0])]
+np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/response.npy',response1)
+np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/config.npy',config)
+omega1 = omega1[np.where(omega1>valrang[0])]
 
-# response1 = response1[np.where(omega1>valrang[0])]
-# response1 = response1[np.where(omega1<valrang[1])]
+response1 = response1[np.where(omega1>valrang[0])]
+response1 = response1[np.where(omega1<valrang[1])]
 
-# response1 = np.log(np.abs(response1[np.where(omega1<valrang[1])])**2)
-# output = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/output.npy')
-# diff = abs(matlabarray[:-1]-output)
+response1 = np.log(np.abs(response1[np.where(omega1<valrang[1])])**2)
+output = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/output.npy')
+diff = abs(matlabarray[:-1]-output)
 # print(diff[np.where(diff>1e-2)])
 
 # response1 = np.log(np.abs(response1)**2)
@@ -125,8 +125,8 @@ print('That took {} seconds'.format(time.time()-firststart))
 fig,axs = plt.subplots(1,2,figsize=(8,3))
 
 # axs[0].plot(omega1,response1)
-# axs[1].plot(omega1[np.where(omega1<valrang[1])],response1)
-# response = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy')
+axs[1].plot(omega1[np.where(omega1<valrang[1])],response1)
+response = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy')
 
 axs[1].set_title('Harmonic Response')
 axs[0].set_title('Laser Pulse')
@@ -139,8 +139,8 @@ axs[0].set_title('Laser Pulse')
 # axs[1].grid(True)
 # axs[0].set_xlabel('High Harmonic Order')`
 t = general_tools.generate_t(config)
-t_fs = general_tools.au_convert(t,'t','SI')/1e-15
-# axs[1].plot(t,response)
+t_fs = general_tools.sau_convert(t,'t','SI',config)/1e-15
+# axs[1].plot(t,response)^
 np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/zakariatime.npy',t_fs)
 axs[0].plot(t_fs,driving_field,'r-')
 axs[0].set_xlabel('Time(fs)')
@@ -149,7 +149,7 @@ axs[0].set_ylabel('Intensity (Arbitrary Scale)')
 plt.tight_layout()
 axs[0].grid(True)
 axs[1].grid(True)
-# plt.savefig('/home/alex/Desktop/Python/SNAIL/images/simpleharmonic.png',dpi=600)
+plt.savefig('/home/alex/Desktop/Python/SNAIL/images/simpleharmonic.png',dpi=600)
 
 plt.show()
 
