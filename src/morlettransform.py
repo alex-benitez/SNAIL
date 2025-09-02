@@ -78,11 +78,11 @@ def wavelet_transform(signal, t=None, maxF=0.5, maxT=0.01,lambda0=1000, JN=500, 
     plt.xlabel('Time [fs]', fontsize=12)
     plt.ylabel('Harmonic order', fontsize=12)
     # plt.xlim(-25,25)
-    plt.ylim(0,32)
+    plt.ylim(0,25)
     plt.xlim(-20,20)
     
     
-    field = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/driving.npy')
+    field = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_data/driving.npy')
     xvals = t[np.where(np.abs(t)<25)]
     yvals =  2.5*field[np.where(np.abs(t)<25)]/max(field[np.where(np.abs(t)<25)])+13
     plt.plot(xvals,yvals,'k--')
@@ -98,9 +98,9 @@ def wavelet_transform(signal, t=None, maxF=0.5, maxT=0.01,lambda0=1000, JN=500, 
     plt.show()
     # return wave, t, S
 
-# response1 = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy')
-# time = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/time.npy')
-response1 = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy')
-time = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/time.npy')
+# response1 = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_data/single.npy')
+# time = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_data/time.npy')
+response1 = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_data/single.npy')
+time = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_data/time.npy')
 wavelet_transform(response1,time)
 

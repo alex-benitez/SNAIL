@@ -9,11 +9,13 @@ should be here, email me at: alexbenitezcanelles@gmail.com
 import numpy as np
 import matplotlib .pyplot as plt
 import general_tools as gt
+import plotting_tools as pt
 
 
 
 Tilaser = gt.config
 Tilaser.calculation_cycles = 60
+Tilaser.parallel = False
 Tilaser.ppcycle = 200
 Tilaser.wavelength = 0.8e-3
 Tilaser.peak_intensity = 1e14
@@ -26,7 +28,7 @@ Tilaser.tau_dropoff_pts = 0.4
 field = gt.generate_pulse(Tilaser)
 t = gt.generate_t(Tilaser)
 resp = gt.dipole_response([[0,0,0]],field,Tilaser)
-plt.plot(t,field)
+pt.driving(field,Tilaser)
 
 
 

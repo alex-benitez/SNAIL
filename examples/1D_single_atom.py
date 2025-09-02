@@ -13,7 +13,7 @@ import general_tools
 from numpy import pi, sqrt, cos, sin, log
 from numpy.linalg import norm
 import time 
-from scipy.io import loadmat
+import plotting_tools as pt
 
 firststart = time.time()
 config = general_tools.config()
@@ -32,16 +32,12 @@ sau =  general_tools.sau_convert
 '''
 
 
-config.calculation_cycles = 12
-config.ppcycle = 800
+config.calculation_cycles = 40
+config.ppcycle = 200
 config.wavelength = 1e-3
 config.peak_intensity = 1e14
 config.pulse_shape = 'gaussian'
-config.pulse_duration = 14# In fs
-config.parallel = False
-
-
-# print(pulse_omega.size)
+config.pulse_duration = 35# In fs
 
 '''
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -54,15 +50,14 @@ config.parallel = False
 
 config.ionization_potential = 12.13
 
-config.tau_window_length = 2# How far back over excursion time to integrate over, as a fraction of a cycle
-config.tau_dropoff_pts = 0.43 # Fraction of the integration window past which the integrands drop off to prevent artifacts
+config.tau_window_length = 1# How far back over excursion time to integrate over, as a fraction of a cycle
+config.tau_dropoff_pts = 0.3 # Fraction of the integration window which the integrands drop off to prevent artifacts
 
-# config.parallelize = True
 xv,yv,zv = [np.array([0]) for i in range(3)]
 
 
 start = time.time()
-valrang = [0,100]
+valrang = [0,1000]
 lawvals = []
 hbar = 1.05457181e-34/(1.6*1e-19)
 c = 3e8
@@ -79,77 +74,23 @@ responsebig = []
 '''
 Up = 9.33*(config.peak_intensity/1e14)*(config.wavelength/1e-3)**2
 cutoff = (config.ionization_potential + 3.17*Up )/(hbar*w)
-matdata = open('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/d_t.txt')
-matlabarray = []
-for line in matdata.readlines():
-    matlabarray.append(line.split(','))
-matlabarray = matlabarray[0]
-matlabarray[-1] = matlabarray[-1][:-2]
-matlabarray = [float(i) for i in matlabarray]
+
 
     
 
 driving_field = general_tools.generate_pulse(config)
-print(max(driving_field))
-# driving_field = np.load('/home/alex/Desktop/Python/SNAIL/Benflattop/theoreticalfield.npy')
 
-# config.pulse_shape = 'cos_sqr'
-# driving_field += general_tools.generate_pulse(config)
 
-# np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/driving.npy',driving_field)
-# print(driving_field)
 start = time.time()
 [omega1,response1] = general_tools.dipole_response([[0,0,0]],driving_field,config)
+end = time.time()
 
-# config.parallel = True
+pt.driving_harmonics(driving_field,response1,config,harmonic_range=valrang,save_location='/home/alex/Desktop/Python/SNAIL/images/driving_response.png')
 
-np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/response.npy',response1)
-np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/config.npy',config)
-omega1 = omega1[np.where(omega1>valrang[0])]
-
-response1 = response1[np.where(omega1>valrang[0])]
-response1 = response1[np.where(omega1<valrang[1])]
-
-response1 = np.log(np.abs(response1[np.where(omega1<valrang[1])])**2)
-output = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/output.npy')
-diff = abs(matlabarray[:-1]-output)
-# print(diff[np.where(diff>1e-2)])
-
-# response1 = np.log(np.abs(response1)**2)
-# response1 = np.imag(response1)
-print('That took {} seconds'.format(time.time()-firststart)) 
-
-
-fig,axs = plt.subplots(1,2,figsize=(8,3))
-
-# axs[0].plot(omega1,response1)
-# axs[1].plot(omega1[np.where(omega1<valrang[1])],response1)
-response = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy')
-
-axs[1].set_title('Harmonic Response')
-axs[0].set_title('Laser Pulse')
-
-# axs[1].set_xlabel('Harmonic Order')
-# axs[1].set_ylabel('Intensity (Arbitrary log Scale)')
-
-# axs[0].vlines(int(cutoff),min(response1),max(response1),'k',linewidth=0.5)
-# axs[0].grid(True)
-# axs[1].grid(True)
-# axs[0].set_xlabel('High Harmonic Order')`
-t = general_tools.generate_t(config)
-t_fs = general_tools.sau_convert(t,'t','SI',config)/1e-15
-axs[1].plot(t,response)
-np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/zakariatime.npy',t_fs)
-axs[0].plot(t_fs,driving_field,'r-')
-axs[0].set_xlabel('Time(fs)')
-axs[0].set_ylabel('Intensity (Arbitrary Scale)')
-# axs[1].set_title('Gaussian Pulse')
-plt.tight_layout()
-axs[0].grid(True)
-axs[1].grid(True)
-plt.savefig('/home/alex/Desktop/Python/SNAIL/images/simpleharmonic.png',dpi=600)
 
 plt.show()
+
+print('That took {} seconds'.format(end-start))
 
 plt.clf()
 plt.close('all')

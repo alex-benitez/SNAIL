@@ -70,7 +70,7 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     correction = np.r_[:pst.shape[1]]+1 > np.c_[:pst.shape[0]]
     
     pst = pst*correction
-    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/Bt.npy',pst)
+    
 
     
     argdstar = pst - bigAt
@@ -91,6 +91,7 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     Sst = -(0.5/np.c_[t[:ws]])*SQR(bigBt - temptBt) + 0.5*(bigCt-temptCt) + Ip*np.c_[t[:ws]]
     t[0] = 0
     Sst[0] = Sst[0]*0
+    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_data/pst.npy',Sst)
     
     del bigBt
     del temptBt
@@ -110,9 +111,10 @@ def lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     timeinterval  = np.array([np.ones(N)*(t[i] - t[i-1]) for i in range(ws)])
 
     integral = integral*timeinterval
-
+    print(integral.shape)
     output = 2*np.imag(np.cumsum(integral,0)[-1])
-    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy',output)
+    
+    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_data/single.npy',output)
     return output
 
 

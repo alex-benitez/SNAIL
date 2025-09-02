@@ -106,8 +106,8 @@ timetaken = np.zeros((55,10))
 #         print('For {} points it took {} seconds'.format(t.size,time.time()-start))
     
     
-# np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/benchsnail.npy',timetaken)
-timetaken = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/benchsnail.npy')
+# np.save('/home/alex/Desktop/Python/SNAIL/src/stored_data/benchsnail.npy',timetaken)
+timetaken = np.load('/home/alex/Desktop/Python/SNAIL/src/stored_data/benchsnail.npy')
 maxtaken = loadmat('/home/alex/Desktop/Python/SNAIL/benchmarking/benchmax.m',appendmat=False)['biglist'][0][1:-1]
 maxtaken[0] = 0.20
 print(maxtaken.size)

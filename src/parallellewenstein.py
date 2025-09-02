@@ -1,6 +1,4 @@
 import numpy as np
-import time
-from numpy import pi, sqrt, cos, sin, log
 from multiprocessing import cpu_count,Pool
 from multiprocessing import shared_memory
 
@@ -10,18 +8,18 @@ def barebones_lewenstein(weights,start,N,lconfig,at=None,epsilon_t=1e-4):
     Ip = lconfig.Ip
     existing_shm = shared_memory.SharedMemory(name='general_buffer')
 
-
-
     # Note that a.shape is (6,) and a.dtype is np.int64 in this example
     
     # Et,At,Bt,Ct,t = np.ndarray((5,), dtype=np.float64, buffer=existing_shm.buf)
     Et,At,Bt,Ct,t = np.ndarray((5,N), dtype=np.float64, buffer=existing_shm.buf)
+    t = t - t[0] 
     if at is None: at = np.ones_like(t)
     alpha = lconfig.alpha
     prefactor = (2**3.5) * (alpha**1.25) / np.pi 
     def dp(p):
         return 1j*prefactor*p/((np.square(p) + alpha)**3)
     
+    ws = weights.size
     bigAt = np.reshape(np.tile(At,ws),(ws,At.size))
     temptAt = bigAt[np.c_[:bigAt.shape[0]], (np.r_[:bigAt.shape[1]] - np.c_[start:ws+start]) % bigAt.shape[1]]
 
@@ -30,21 +28,28 @@ def barebones_lewenstein(weights,start,N,lconfig,at=None,epsilon_t=1e-4):
     
     c = (np.pi/(epsilon_t + 0.5*1j*t[start:ws+start]))**1.5
     
-    bigBt = Bt*np.c_[np.ones(ws)] # Alternate method of generating big matrix
+    bigBt = Bt*np.c_[np.ones(ws)]
+
     temptBt = bigBt[np.c_[:bigBt.shape[0]], (np.r_[:bigBt.shape[1]] - np.c_[start:ws+start]) % bigBt.shape[1]]
-    
-    
-    temptBt = bigBt[np.c_[:bigBt.shape[0]], (np.r_[:bigBt.shape[1]] - np.c_[:ws]) % bigBt.shape[1]]
-    pst = (bigBt - temptBt)/np.c_[t[start:ws+start]]
+
     if start == 0:
+        temp = t[0]
+        t[0] = 1
+        pst = (bigBt - temptBt)/np.c_[t[start:ws+start]]
+        t[0] = temp
         pst[0] = At
+        del temp    
+    else:
+        pst = (bigBt - temptBt)/np.c_[t[start:ws+start]]
+
+    
         
     correction = np.r_[:pst.shape[1]]+1 > np.c_[:pst.shape[0]]+start
     
     
     pst = pst*correction
-    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/correction{}.npy'.format(start),pst)
-    
+    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_data/pst{}.npy'.format(start),pst)
+
     argdstar = pst - bigAt
     argdstar = argdstar*correction
     argdnorm = pst - temptAt
@@ -59,11 +64,18 @@ def barebones_lewenstein(weights,start,N,lconfig,at=None,epsilon_t=1e-4):
     SQR = np.square
     integral = np.zeros((ws,N))
     dt = np.diff(t)
-
-    Sst = -(0.5/np.c_[t[start:start+ws]])*SQR(bigBt - temptBt) + 0.5*(bigCt-temptCt) + Ip*np.c_[t[start:start+ws]]
     
-    Sst[0] = Sst[0]*(1-start==0)
-    
+    if start == 0:
+        temp = t[0]
+        t[0] = 1
+        Sst = -(0.5/np.c_[t[start:start+ws]])*SQR(bigBt - temptBt) + 0.5*(bigCt-temptCt) + Ip*np.c_[t[start:start+ws]]
+        t[0] = temp
+        del temp
+        Sst[0] = Sst[0]*0
+    else:
+        Sst = -(0.5/np.c_[t[start:start+ws]])*SQR(bigBt - temptBt) + 0.5*(bigCt-temptCt) + Ip*np.c_[t[start:start+ws]]
+        
+    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_data/pst{}.npy'.format(start),Sst)
     del bigBt
     del temptBt
     del temptCt
@@ -71,14 +83,14 @@ def barebones_lewenstein(weights,start,N,lconfig,at=None,epsilon_t=1e-4):
 
     Sst = Sst*correction
     bigEt = np.reshape(np.tile(Et,ws),(ws,Et.size))
-    temptEt = bigEt[np.c_[:bigEt.shape[0]], (np.r_[:bigEt.shape[1]] - np.c_[:ws]) % bigEt.shape[1]]
+    temptEt = bigEt[np.c_[:bigEt.shape[0]], (np.r_[:bigEt.shape[1]] - np.c_[start:ws+start]) % bigEt.shape[1]]
     
     bigat = np.reshape(np.tile(at,ws),(ws,at.size))
-    temptat = bigat[np.c_[:bigat.shape[0]], (np.r_[:bigat.shape[1]] - np.c_[:ws]) % bigat.shape[1]]
+    temptat = bigat[np.c_[:bigat.shape[0]], (np.r_[:bigat.shape[1]] - np.c_[start:ws+start]) % bigat.shape[1]]
     
     integral = dstar*dnorm*np.exp(-1j*Sst)*temptEt*(np.c_[weights])*(np.c_[c])*(bigat)*temptat
     
-    timeinterval  = np.array([np.ones(N)*(t[i] - t[i-1]) for i in range(ws)])
+    timeinterval  = np.array([np.ones(N)*(t[i] - t[i-1]) for i in range(start,ws+start)])
     integral = integral*timeinterval
     return integral
 
@@ -108,7 +120,7 @@ def parallel_lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     # start = time.time()
 
     Et = np.squeeze(Et_data)
-    t = t - t[0] +0.00001
+    t = t - t[0] 
 
 
     weights = lconfig.weights
@@ -118,8 +130,7 @@ def parallel_lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     
     N = Et_data.size
     ws = weights.size
-    
-    split = round(ws/cores) # Evenly split the tasks amongs the cores
+    split = int(ws/cores) # Evenly split the tasks amongs the cores
     
     # print('That took {}'.format(time.time()-start))
 
@@ -159,20 +170,19 @@ def parallel_lewenstein(t,Et_data,lconfig,at=None,epsilon_t=1e-4):
     # print(b)
     info = [(weights[split*i:split*(i+1)],split*i,N,lconfig) for i in range(cores-1)]
     info.append((weights[split*(cores-1):],split*(cores-1),N,lconfig))
-    print('Running on {} cores'.format(cores))
-    print(len(info))
+    # print('Running on {} cores'.format(cores))
+    # print(len(info))
     # Create a process pool
     with Pool(processes=cores) as pool:
 
         results = pool.starmap(barebones_lewenstein, info)
-        print('Yipeee')
+
 
     results = np.vstack((results))
-    print(results.shape)
 
 
     results = 2*np.imag(np.cumsum(results,0)[-1])
-    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/parallel.npy',results)    
+    np.save('/home/alex/Desktop/Python/SNAIL/src/stored_data/parallel.npy',results)    
     shm.close()
     shm.unlink()
 

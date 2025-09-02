@@ -80,9 +80,13 @@ def generate_pulse(config):
     
     Args:
         config (class):
+            
             - Calculation_cycles
+            
             - Points per cycle
+            
             - Pulse duration
+            
             - Pulse shape
     
     Returns:
@@ -170,7 +174,7 @@ def get_omega_axis(t, config):
 def dipole_response(points,driving_field,config,t=np.array([])):
     if t.size == 0:
         t = generate_t(config)
-        print(t)
+
     pi = np.pi
     
     '''
@@ -233,8 +237,8 @@ def dipole_response(points,driving_field,config,t=np.array([])):
         xi,yi,zi = point
         d_t = lewenstein(t,driving_field,config)#*t_window
         np.save('/home/alex/Desktop/Python/SNAIL/Benflattop/responsestore/response.npy',d_t)
-        np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/single.npy',d_t)
-        np.save('/home/alex/Desktop/Python/SNAIL/src/stored_arrays/time.npy',t)
+        # np.save('/home/alex/Desktop/Python/SNAIL/src/stored_data/single.npy',d_t)
+        np.save('/home/alex/Desktop/Python/SNAIL/src/stored_data/time.npy',t)
         
         d_t = d_t*wind
 
