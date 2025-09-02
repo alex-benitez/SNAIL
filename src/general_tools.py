@@ -74,8 +74,11 @@ def generate_pulse(config):
     currently supports pulse types:
         
         Constant - A constant envelope 
+        
         Gaussian - Gaussian beam with no cutoff
+        
         Super Gaussian - Gaussian with a faster decline
+        
         Cos Squared - Cos squared envelope
     
     Args:
