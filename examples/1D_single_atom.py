@@ -58,12 +58,12 @@ xv,yv,zv = [np.array([0]) for i in range(3)]
 
 start = time.time()
 valrang = [0,1000]
-lawvals = []
-hbar = 1.05457181e-34/(1.6*1e-19)
-c = 3e8
+# lawvals = []
+# hbar = 1.05457181e-34/(1.6*1e-19)
+# c = 3e8
 
-w = c*2*pi/(config.wavelength*1e-3)
-responsebig = []
+# w = c*2*pi/(config.wavelength*1e-3)
+# responsebig = []
 
 
 
@@ -72,8 +72,8 @@ responsebig = []
                                                                       PLOTTING FUNCTIONS
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 '''
-Up = 9.33*(config.peak_intensity/1e14)*(config.wavelength/1e-3)**2
-cutoff = (config.ionization_potential + 3.17*Up )/(hbar*w)
+# Up = 9.33*(config.peak_intensity/1e14)*(config.wavelength/1e-3)**2
+# cutoff = (config.ionization_potential + 3.17*Up )/(hbar*w)
 
 
     
@@ -86,8 +86,6 @@ start = time.time()
 end = time.time()
 
 pt.driving_harmonics(driving_field,response1,config,harmonic_range=valrang,save_location='/home/alex/Desktop/Python/SNAIL/images/driving_response.png')
-
-
 plt.show()
 
 print('That took {} seconds'.format(end-start))

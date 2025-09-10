@@ -4,7 +4,8 @@ This is a suite of examples to give you an idea of how the code works; all of th
 
 1D Single Atom Response
 -----------------------
-The first step when using SNAIL is always to define the config, this stores all of the information about your laser and target and allows the user to only define essential variables. 
+SNAIL was made with ease of use in mind, because of this I have included a number of common laser templates, which include all of the pre-defined variables.  
+
 .. code-block:: python
 
  	pulse = generate_pulse("gaussian")
